@@ -9,12 +9,15 @@ import SceneKit
 import QuartzCore
 
 class GameViewController: NSViewController {
+    static let scaleFactor: Double = 0.00001;
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        var physicsField = SCNPhysicsField.radialGravity()
+        
         // create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+        let scene = SCNScene(named: "art.scnassets/earth.scn")!
         
         // create and add a camera to the scene
         let cameraNode = SCNNode()
@@ -22,13 +25,17 @@ class GameViewController: NSViewController {
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 15)
+        let oneMillionMiles:CGFloat = 1000000.0
+        let earthPos:CGFloat = 93 * oneMillionMiles
+        
+        cameraNode.position = SCNVector3(x: 0, y:0, z: GameViewController.toSceneCoords(inputValue: earthPos))
         
         // create and add a light to the scene
+        /*
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
+        lightNode.position = SCNVector3(x: 0, y: GameViewController.toSceneCoords(inputValue: earthPos), z: GameViewController.toSceneCoords(inputValue: earthPos))
         scene.rootNode.addChildNode(lightNode)
         
         // create and add an ambient light to the scene
@@ -37,15 +44,24 @@ class GameViewController: NSViewController {
         ambientLightNode.light!.type = .ambient
         ambientLightNode.light!.color = NSColor.darkGray
         scene.rootNode.addChildNode(ambientLightNode)
+         */
         
-        // retrieve the ship node
-        let ship = scene.rootNode.childNode(withName: "ship", recursively: true)!
-        
-        // animate the 3d object
-        ship.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 1)))
-        
+        // add nodes for sun and earth
+        let mercuryNode = GameViewController.solarSystemBody(earthMassFraction: 0.055, earthRadiusFraction: 0.3829, zInitial: earthPos * 0.7282, color: NSColor.green)
+        scene.rootNode.addChildNode(mercuryNode)
+
+        let venusNode = GameViewController.solarSystemBody(earthMassFraction: 0.815, earthRadiusFraction: 0.9499, zInitial: earthPos * 0.466, color: NSColor.gray)
+        scene.rootNode.addChildNode(venusNode)
+
+        let earthNode = GameViewController.solarSystemBody(earthMassFraction: 1.0, earthRadiusFraction: 50.0, zInitial: earthPos, color: NSColor.blue)
+        scene.rootNode.addChildNode(earthNode)
+
+        let sunNode = GameViewController.solarSystemBody(earthMassFraction: 333000.0, earthRadiusFraction: 109.0, zInitial: 0.0, color: NSColor.yellow)
+        scene.rootNode.addChildNode(sunNode)
+
         // retrieve the SCNView
         let scnView = self.view as! SCNView
+        scnView.pointOfView = cameraNode
         
         // set the scene to the view
         scnView.scene = scene
@@ -64,6 +80,21 @@ class GameViewController: NSViewController {
         var gestureRecognizers = scnView.gestureRecognizers
         gestureRecognizers.insert(clickGesture, at: 0)
         scnView.gestureRecognizers = gestureRecognizers
+    }
+    
+    private class func solarSystemBody(earthMassFraction: Double, earthRadiusFraction: Double, zInitial: Double, color: NSColor) -> SCNNode {
+        let earthRadius = 3950.0
+        let nodeRadius = earthRadiusFraction * earthRadius
+        
+        let sphere = SCNSphere(radius: toSceneCoords(inputValue: nodeRadius))
+        let node = SCNNode( geometry: sphere)
+        node.geometry?.firstMaterial?.diffuse.contents = color;
+        node.position = SCNVector3(x: 0, y: toSceneCoords(inputValue: zInitial), z: 0)
+        return node
+    }
+    
+    private class func toSceneCoords(inputValue: Double) -> Double {
+        return inputValue * scaleFactor;
     }
     
     @objc
