@@ -9,33 +9,36 @@ import SceneKit
 import QuartzCore
 
 class GameViewController: NSViewController {
-    static let scaleFactor: Double = 0.00001;
+    static let scaleFactor: Double = 0.000001;
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        var physicsField = SCNPhysicsField.radialGravity()
-        
+
+        let oneMillionMiles:CGFloat = 1000000.0
+        let earthPos:CGFloat = 93 * oneMillionMiles
+
         // create a new scene
         let scene = SCNScene(named: "art.scnassets/earth.scn")!
         
         // create and add a camera to the scene
+        let camera = SCNCamera()
+        camera.fieldOfView = 60.0
+        camera.zNear = GameViewController.toSceneCoords(inputValue: earthPos * 0.1)
+        camera.zFar = GameViewController.toSceneCoords(inputValue: earthPos * 2.5)
+
         let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
+        cameraNode.camera = camera
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        let oneMillionMiles:CGFloat = 1000000.0
-        let earthPos:CGFloat = 93 * oneMillionMiles
-        
-        cameraNode.position = SCNVector3(x: 0, y:0, z: GameViewController.toSceneCoords(inputValue: earthPos))
+        cameraNode.position = SCNVector3(x: 0, y:0, z: GameViewController.toSceneCoords(inputValue: earthPos * 1.5))
         
         // create and add a light to the scene
         /*
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: GameViewController.toSceneCoords(inputValue: earthPos), z: GameViewController.toSceneCoords(inputValue: earthPos))
+        lightNode.position = SCNVector3(x: 0, y: GameViewController.toSceneCoords(inputValue: earthPos), z: GameViewController.toSceneCoords(inputValue: earthPos * 1.5))
         scene.rootNode.addChildNode(lightNode)
         
         // create and add an ambient light to the scene
@@ -53,7 +56,7 @@ class GameViewController: NSViewController {
         let venusNode = GameViewController.solarSystemBody(earthMassFraction: 0.815, earthRadiusFraction: 0.9499, zInitial: earthPos * 0.466, color: NSColor.gray)
         scene.rootNode.addChildNode(venusNode)
 
-        let earthNode = GameViewController.solarSystemBody(earthMassFraction: 1.0, earthRadiusFraction: 50.0, zInitial: earthPos, color: NSColor.blue)
+        let earthNode = GameViewController.solarSystemBody(earthMassFraction: 1.0, earthRadiusFraction: 1.0, zInitial: earthPos, color: NSColor.blue)
         scene.rootNode.addChildNode(earthNode)
 
         let sunNode = GameViewController.solarSystemBody(earthMassFraction: 333000.0, earthRadiusFraction: 109.0, zInitial: 0.0, color: NSColor.yellow)
