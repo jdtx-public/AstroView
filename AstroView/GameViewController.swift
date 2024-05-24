@@ -18,7 +18,7 @@ class GameViewController: NSViewController {
         let earthPos:CGFloat = 93 * oneMillionMiles
 
         // create a new scene
-        let scene = SCNScene(named: "art.scnassets/earth.scn")!
+        let scene = SCNScene(named: "art.scnassets/solar.scn")!
         
         // create and add a camera to the scene
         let camera = SCNCamera()
@@ -49,19 +49,6 @@ class GameViewController: NSViewController {
         scene.rootNode.addChildNode(ambientLightNode)
          */
         
-        // add nodes for sun and earth
-        let mercuryNode = GameViewController.solarSystemBody(earthMassFraction: 0.055, earthRadiusFraction: 0.3829, zInitial: earthPos * 0.7282, color: NSColor.green)
-        scene.rootNode.addChildNode(mercuryNode)
-
-        let venusNode = GameViewController.solarSystemBody(earthMassFraction: 0.815, earthRadiusFraction: 0.9499, zInitial: earthPos * 0.466, color: NSColor.gray)
-        scene.rootNode.addChildNode(venusNode)
-
-        let earthNode = GameViewController.solarSystemBody(earthMassFraction: 1.0, earthRadiusFraction: 1.0, zInitial: earthPos, color: NSColor.blue)
-        scene.rootNode.addChildNode(earthNode)
-
-        let sunNode = GameViewController.solarSystemBody(earthMassFraction: 333000.0, earthRadiusFraction: 109.0, zInitial: 0.0, color: NSColor.yellow)
-        scene.rootNode.addChildNode(sunNode)
-
         // retrieve the SCNView
         let scnView = self.view as! SCNView
         scnView.pointOfView = cameraNode
