@@ -19,11 +19,13 @@ class GameViewController: NSViewController {
 
         // create a new scene
         let scene = SCNScene(named: "art.scnassets/solar.scn")!
+
+        scene.physicsWorld.speed = 0.001
         
         // create and add a camera to the scene
         let camera = SCNCamera()
         camera.fieldOfView = 60.0
-        camera.zNear = GameViewController.toSceneCoords(inputValue: earthPos * 0.1)
+        camera.zNear = GameViewController.toSceneCoords(inputValue: earthPos * 0.0000001)
         camera.zFar = GameViewController.toSceneCoords(inputValue: earthPos * 2.5)
 
         let cameraNode = SCNNode()
@@ -32,7 +34,7 @@ class GameViewController: NSViewController {
         
         // place the camera
         cameraNode.position = SCNVector3(x: 0, y:0, z: GameViewController.toSceneCoords(inputValue: earthPos * 1.5))
-        
+
         // create and add a light to the scene
         /*
         let lightNode = SCNNode()
