@@ -19,12 +19,13 @@ class GameViewController: NSViewController {
         
         // create and add a camera to the scene
         let cameraNode = SCNNode()
+        cameraNode.name = "camera"
         cameraNode.camera = SCNCamera()
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
         cameraNode.position = SCNVector3(x: 0, y: 0, z: 200)
-        cameraNode.camera?.zFar = 1000;
+        cameraNode.camera?.zFar = 30000;
         
         // create and add a light to the scene
         let lightNode = SCNNode()
@@ -96,5 +97,27 @@ class GameViewController: NSViewController {
             
             SCNTransaction.commit()
         }
+    }
+    
+    @IBAction func handleViewEarth(_ sender: Any) {
+        let scnView = self.view as! SCNView
+        let scene = scnView.scene!
+        
+        let cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)!
+        
+        let camera = cameraNode.camera!
+        
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 23464)
+    }
+    
+    @IBAction func handleViewSun(_ sender: Any) {
+        let scnView = self.view as! SCNView
+        let scene = scnView.scene!
+        
+        let cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)!
+        
+        let camera = cameraNode.camera!
+        
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 200)
     }
 }
