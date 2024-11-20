@@ -13,9 +13,12 @@ class GameViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // create a new scene
-        let scene = SCNScene(named: "art.scnassets/solar.scn")!
+        // create a new scene and null out gravity
+        let scene = SCNScene(named: "art.scnassets/EmptySpace.scn")!
         scene.physicsWorld.gravity = SCNVector3(x: 0, y: 0, z: 0)
+        
+        // create all the solar system bodies
+        GameViewController.addSolarBodies(targetNode: scene.rootNode)
         
         // create and add a camera to the scene
         let cameraNode = SCNNode()
@@ -105,8 +108,6 @@ class GameViewController: NSViewController {
         
         let cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)!
         
-        let camera = cameraNode.camera!
-        
         cameraNode.position = SCNVector3(x: 0, y: 0, z: 23464)
     }
     
@@ -116,8 +117,25 @@ class GameViewController: NSViewController {
         
         let cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)!
         
-        let camera = cameraNode.camera!
-        
         cameraNode.position = SCNVector3(x: 0, y: 0, z: 200)
+    }
+    
+    private class func addSolarBodies(targetNode: SCNNode) {
+        targetNode.addChildNode(solarSystemBody(bodyName: "Sun", earthMassFraction: 333030, earthRadiusFraction: 109, zInitial: 0, textureName: "Solarsystemscope_texture_8k_sun"));
+        targetNode.addChildNode(solarSystemBody(bodyName: "Earth", earthMassFraction: 1, earthRadiusFraction: 1, zInitial: 23454.8, textureName: "earth_texture"));
+    }
+    
+    private class func solarSystemBody(bodyName: String, earthMassFraction: Double, earthRadiusFraction: Double, zInitial: Double, textureName: String) -> SCNNode {
+        let sphere = SCNSphere(radius: earthRadiusFraction)
+        let node = SCNNode( geometry: sphere)
+        var textureMaterial = SCNMaterial()
+        let mainBundle = Bundle.main
+        let resourcePath = mainBundle.path(forResource: textureName, ofType: "jpg", inDirectory: "art.scnassets")
+        let myImage = NSImage(byReferencingFile: resourcePath!)!
+        textureMaterial.diffuse.contents = myImage
+        node.geometry?.materials = [textureMaterial]
+        node.name = bodyName
+        node.position = SCNVector3(x: 0, y: 0, z: zInitial)
+        return node
     }
 }
