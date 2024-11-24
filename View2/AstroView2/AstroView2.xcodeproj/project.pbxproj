@@ -30,6 +30,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		1F126ADD2CF2981600F28B62 /* Novas */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Novas;
+			sourceTree = "<group>";
+		};
+		1F126AFB2CF29A7600F28B62 /* utility */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = utility;
+			sourceTree = "<group>";
+		};
 		1FFFBCBE2CE9807E00A00A51 /* AstroView2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = AstroView2;
@@ -75,6 +85,8 @@
 		1FFFBCB32CE9807E00A00A51 = {
 			isa = PBXGroup;
 			children = (
+				1F126AFB2CF29A7600F28B62 /* utility */,
+				1F126ADD2CF2981600F28B62 /* Novas */,
 				1FFFBCBE2CE9807E00A00A51 /* AstroView2 */,
 				1FFFBCD22CE9807F00A00A51 /* AstroView2Tests */,
 				1FFFBCDC2CE9807F00A00A51 /* AstroView2UITests */,
@@ -108,6 +120,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				1F126ADD2CF2981600F28B62 /* Novas */,
+				1F126AFB2CF29A7600F28B62 /* utility */,
 				1FFFBCBE2CE9807E00A00A51 /* AstroView2 */,
 			);
 			name = AstroView2;
@@ -175,6 +189,7 @@
 				TargetAttributes = {
 					1FFFBCBB2CE9807E00A00A51 = {
 						CreatedOnToolsVersion = 16.1;
+						LastSwiftMigration = 1610;
 					};
 					1FFFBCCE2CE9807F00A00A51 = {
 						CreatedOnToolsVersion = 16.1;
@@ -392,6 +407,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AstroView2/AstroView2.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -408,6 +424,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "jeff-org.AstroView2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Novas/src/AstroView2-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -417,6 +435,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AstroView2/AstroView2.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -433,6 +452,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "jeff-org.AstroView2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Novas/src/AstroView2-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
