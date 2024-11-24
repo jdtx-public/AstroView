@@ -135,6 +135,7 @@ class GameViewController: NSViewController {
         sunNode.addAnimation(axialRotationAnimation(), forKey: "rotation about axis")
         
         let earthNode = solarSystemBody(bodyName: "Earth", earthMassFraction: 1, earthRadiusFraction: 1, earthRadiusOrbit: earthRadiusOrbit, textureName: "earth_texture")
+        earthNode.runAction(movePlanet())
         targetNode.addChildNode(earthNode)
         
         let earthPos = PlanetSim.earthPos(d: Date.now)
@@ -171,5 +172,18 @@ class GameViewController: NSViewController {
         spin.repeatCount = .infinity
         
         return spin
+    }
+    
+    private class func movePlanet() -> SCNAction {
+        let earthRadiusOrbit = 23454.8
+        let fullDistance = earthRadiusOrbit * GameViewController.earthRadius
+
+        let moveTo = SCNAction.customAction(duration: 1000.0) { node, elapsedTime in
+            let fakeTime = Date.now.addingTimeInterval((elapsedTime * 3600.0))
+            let earthPos = PlanetSim.earthPos(d: fakeTime)
+            node.position = SCNVector3(earthPos.x * fullDistance, earthPos.y * fullDistance, earthPos.z * fullDistance)
+        }
+        
+        return moveTo
     }
 }
