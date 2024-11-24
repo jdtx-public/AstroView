@@ -113,6 +113,8 @@ class GameViewController: NSViewController {
         viewByName(bodyName: "Sun")
     }
     
+    
+    
     private func viewByName(bodyName: String) {
         let scnView = self.view as! SCNView
         let scene = scnView.scene!
@@ -127,10 +129,13 @@ class GameViewController: NSViewController {
     
     private class func addSolarBodies(targetNode: SCNNode) {
         let earthRadiusOrbit = 23454.8
-        targetNode.addChildNode(solarSystemBody(bodyName: "Sun", earthMassFraction: 333030, earthRadiusFraction: 109, earthRadiusOrbit: 0, textureName: "Solarsystemscope_texture_8k_sun"));
+        
+        let sunNode = solarSystemBody(bodyName: "Sun", earthMassFraction: 333030, earthRadiusFraction: 109, earthRadiusOrbit: 0, textureName: "Solarsystemscope_texture_8k_sun")
+        targetNode.addChildNode(sunNode)
+        sunNode.addAnimation(axialRotationAnimation(), forKey: "rotation about axis")
         
         let earthNode = solarSystemBody(bodyName: "Earth", earthMassFraction: 1, earthRadiusFraction: 1, earthRadiusOrbit: earthRadiusOrbit, textureName: "earth_texture")
-        targetNode.addChildNode(earthNode);
+        targetNode.addChildNode(earthNode)
         
         let earthPos = PlanetSim.earthPos(d: Date.now)
 
@@ -156,5 +161,15 @@ class GameViewController: NSViewController {
         node.name = bodyName
         node.position = SCNVector3(x: 0, y: 0, z: fullDistance)
         return node
+    }
+    
+    private class func axialRotationAnimation() -> CAAnimation {
+        let spin = CABasicAnimation(keyPath: "rotation")
+        spin.fromValue = NSValue(scnVector4: SCNVector4(0.0, 1.0, 0.0, 0.0))
+        spin.toValue = NSValue(scnVector4: SCNVector4(0.0, 1.0, 0.0, 2.0 * Float.pi))
+        spin.duration = 10.0
+        spin.repeatCount = .infinity
+        
+        return spin
     }
 }
