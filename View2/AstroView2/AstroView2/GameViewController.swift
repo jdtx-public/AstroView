@@ -113,18 +113,27 @@ class GameViewController: NSViewController {
         viewByName(bodyName: "Sun")
     }
     
-    
-    
     private func viewByName(bodyName: String) {
         let scnView = self.view as! SCNView
         let scene = scnView.scene!
         
         let bodyNode = scene.rootNode.childNode(withName: bodyName, recursively: true)!
+        let cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)!
+
+        let bodyPos = bodyNode.position
+        let bodyBounds = bodyNode.geometry!.boundingBox
+        cameraNode.position = SCNVector3(x: bodyPos.x + bodyBounds.max.x + 1000, y: bodyPos.y + bodyBounds.max.y + 1000, z: bodyPos.z + bodyBounds.max.z + 1000)
+
+        let lookAtConstraint = SCNLookAtConstraint(target: bodyNode)
+        cameraNode.constraints = [lookAtConstraint]
+
+        /*
         let bodyZ = bodyNode.position.z
         let bodyBounds = bodyNode.geometry!.boundingBox
-        
-        let cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)!
         cameraNode.position = SCNVector3(x: 0, y: 0, z: bodyZ + bodyBounds.max.z + 1000)
+        */
+        /*
+        */
     }
     
     private class func addSolarBodies(targetNode: SCNNode) {
