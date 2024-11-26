@@ -29,6 +29,16 @@
 		1FFFBCD92CE9807F00A00A51 /* AstroView2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AstroView2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1FF5B4FE2CF606B700B06698 /* Exceptions for "Resources" folder in "AstroView2" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ephemeris,
+			);
+			target = 1FFFBCBB2CE9807E00A00A51 /* AstroView2 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1F126ADD2CF2981600F28B62 /* Novas */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -38,6 +48,22 @@
 		1F126AFB2CF29A7600F28B62 /* utility */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = utility;
+			sourceTree = "<group>";
+		};
+		1FF5B4F02CF600B600B06698 /* Ephemeris */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Ephemeris;
+			sourceTree = "<group>";
+		};
+		1FF5B4FB2CF606AD00B06698 /* Resources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1FF5B4FE2CF606B700B06698 /* Exceptions for "Resources" folder in "AstroView2" target */,
+			);
+			explicitFolders = (
+				ephemeris,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		1FFFBCBE2CE9807E00A00A51 /* AstroView2 */ = {
@@ -85,6 +111,8 @@
 		1FFFBCB32CE9807E00A00A51 = {
 			isa = PBXGroup;
 			children = (
+				1FF5B4F02CF600B600B06698 /* Ephemeris */,
+				1FF5B4FB2CF606AD00B06698 /* Resources */,
 				1F126AFB2CF29A7600F28B62 /* utility */,
 				1F126ADD2CF2981600F28B62 /* Novas */,
 				1FFFBCBE2CE9807E00A00A51 /* AstroView2 */,
@@ -122,6 +150,7 @@
 			fileSystemSynchronizedGroups = (
 				1F126ADD2CF2981600F28B62 /* Novas */,
 				1F126AFB2CF29A7600F28B62 /* utility */,
+				1FF5B4F02CF600B600B06698 /* Ephemeris */,
 				1FFFBCBE2CE9807E00A00A51 /* AstroView2 */,
 			);
 			name = AstroView2;
@@ -412,6 +441,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
@@ -440,6 +470,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
