@@ -617,18 +617,37 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="hB3-LF-h0Y"/>
-                                        <menuItem title="Earth" id="fL6-gs-qbD">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="handleViewEarth:" target="Ady-hI-5gd" id="0ZT-ja-ePn"/>
-                                            </connections>
-                                        </menuItem>
                                         <menuItem title="Sun" id="q2i-Bz-ovu">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="handleViewSun:" target="Ady-hI-5gd" id="EeJ-9f-Z2x"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Mercury" id="fL6-gs-qbD">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="handleViewMercury:" target="Ady-hI-5gd" id="ykw-7C-gTG"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Venus" id="ZU9-I0-Dxr">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="handleViewVenus:" target="Ady-hI-5gd" id="V9U-Qc-vaJ"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Earth" id="2hF-pl-spj">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="handleViewEarth:" target="Ady-hI-5gd" id="iEL-yX-z9H"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Mars" id="tnd-f0-fpZ">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="handleViewMars:" target="Ady-hI-5gd" id="q4T-0C-8v2"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="cmk-QS-mBq"/>
                                         <menuItem title="Show Sidebar" keyEquivalent="s" id="kIP-vf-haE">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
