@@ -30,19 +30,27 @@ public class PlanetSim {
         private var novas_object: object
     }
     
+    private static func checkEphemeris() {
+        _ephemeris
+    }
+    
     static func sunPos(d: Date) -> SCNVector3 {
+        checkEphemeris()
         return _sun.position(d: d)
     }
     
     static func mercuryPos(d: Date) -> SCNVector3 {
+        checkEphemeris()
         return _mercury.position(d: d)
     }
     
     static func venusPos(d: Date) -> SCNVector3 {
+        checkEphemeris()
         return _venus.position(d: d)
     }
     
     static func earthPos(d: Date) -> SCNVector3 {
+        checkEphemeris()
         let retVal = _earth.position(d: d)
         
         // print("earth pos: \(retVal)")
@@ -51,10 +59,12 @@ public class PlanetSim {
     }
     
     static func moonPos(d: Date) -> SCNVector3 {
+        checkEphemeris()
         return _moon.position(d: d)
     }
     
     static func marsPos(d: Date) -> SCNVector3 {
+        checkEphemeris()
         return _mars.position(d: d)
     }
     
@@ -64,4 +74,6 @@ public class PlanetSim {
     private static let _earth = EphemerisPlanet(planet: NOVAS_EARTH)
     private static let _moon = EphemerisPlanet(planet: NOVAS_MOON)
     private static let _mars = EphemerisPlanet(planet: NOVAS_MARS)
+    
+    private static let _ephemeris = Ephemeris()
 }

@@ -7,12 +7,12 @@
 
 import Foundation
 
-public class EphemerisLoader {
-    public static func load() {
+public class Ephemeris {
+    public init() {
         let mainBundle = Bundle.main
         let resourcePath = mainBundle.path(forResource: "lnxp1900p2053", ofType: "421", inDirectory: "ephemeris")!
         
-        var cchars = resourcePath.utf8CString
+        let cchars = resourcePath.utf8CString
         
         var jdBegin: Double = 0
         var jdEnd: Double = 0
@@ -23,7 +23,7 @@ public class EphemerisLoader {
         }
     }
     
-    public static func unload() {
+    deinit {
         ephem_close()
     }
 }
