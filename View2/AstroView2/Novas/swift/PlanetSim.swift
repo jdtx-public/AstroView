@@ -52,9 +52,6 @@ public class PlanetSim {
     static func earthPos(d: Date) -> SCNVector3 {
         checkEphemeris()
         let retVal = _earth.position(d: d)
-        
-        // print("earth pos: \(retVal)")
-        
         return retVal
     }
     

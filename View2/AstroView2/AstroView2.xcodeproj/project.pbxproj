@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1FF5B5D82CFBCF9C00B06698 /* SCNMathExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		1FFFBCD02CE9807F00A00A51 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -88,6 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FF5B5D82CFBCF9C00B06698 /* SCNMathExtensions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,6 +160,7 @@
 			);
 			name = AstroView2;
 			packageProductDependencies = (
+				1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */,
 			);
 			productName = AstroView2;
 			productReference = 1FFFBCBC2CE9807E00A00A51 /* AstroView2.app */;
@@ -239,6 +245,9 @@
 			);
 			mainGroup = 1FFFBCB32CE9807E00A00A51;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1FFFBCBD2CE9807E00A00A51 /* Products */;
 			projectDirPath = "";
@@ -592,6 +601,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/capnslipp/SCNMathExtensions.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.7;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */;
+			productName = SCNMathExtensions;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1FFFBCB42CE9807E00A00A51 /* Project object */;
 }
