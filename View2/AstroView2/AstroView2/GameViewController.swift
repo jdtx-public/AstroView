@@ -160,7 +160,7 @@ class GameViewController: NSViewController {
         let scnView = self.view as! SCNView
         let scene = scnView.scene!
         
-        let bodyNode = scene.rootNode.childNode(withName: "Sun", recursively: true)!.childNode(withName: "solarBody", recursively: true)!
+        let bodyNode = scene.rootNode.childNode(withName: "Sun", recursively: true)!.childNode(withName: "Sun", recursively: true)!
         let bodyBounds = bodyNode.geometry!.boundingBox
         
         // we'll view from .02 AU away
@@ -198,13 +198,16 @@ class GameViewController: NSViewController {
         camera.zFar = 1.5 * GameViewController.oneAu
         
         let oldPos = cameraNode.position
-        // let bodyBounds = bodyNode.geometry!.boundingBox
+        let geometryNode = bodyNode.childNode(withName: "solarBody", recursively: true)!
+        let bodyBounds = geometryNode.geometry!.boundingBox
 
         print("targetNode pos = \(bodyNode.position) \(bodyNode.position.length() / GameViewController.oneAu)")
         print("cameraNode oldPos = \(oldPos) \(oldPos.length() / GameViewController.oneAu)")
         print("cameraNode newPos = \(cameraPos) len = \(cameraPos.length() / GameViewController.oneAu)")
         print("camera z =\(cameraNode.camera?.zNear) \(cameraNode.camera?.zFar)")
-        // print("bounds = \(bodyBounds)")
+        print("geometry bounds = \(bodyBounds)")
+        let parentBounds = bodyNode.boundingBox
+        print("parent bounds = \(parentBounds)")
 
         cameraNode.position = cameraPos
         cameraNode.look(at: cameraPos.scaleBy(-1.0))
@@ -238,9 +241,10 @@ class GameViewController: NSViewController {
                                         earthRadiusFraction: 0.9499,
                                           textureName: "2k_venus_surface",
                                         computePosition: PlanetSim.venusPos,
-                                        pointerColor: NSColor.cyan)
+                                        pointerColor: NSColor.orange)
         solarSystemNode.addChildNode(venusNode)
-
+        
+        /*
         let earthNode = solarSystemBody(bodyName: "Earth",
                                         earthRadiusFraction: 1,
                                         textureName: "Solarsystemscope_texture_8k_earth_daymap",
@@ -252,15 +256,16 @@ class GameViewController: NSViewController {
                                        earthRadiusFraction: 0.2725,
                                         textureName: "2k_moon",
                                         computePosition: PlanetSim.moonPos,
-                                       pointerColor: NSColor.purple)
+                                       pointerColor: NSColor.white)
         solarSystemNode.addChildNode(moonNode)
         
         let marsNode = solarSystemBody(bodyName: "Mars",
                                        earthRadiusFraction: 0.533,
                                         textureName: "2k_mars",
                                        computePosition: PlanetSim.marsPos,
-                                       pointerColor: NSColor.magenta)
+                                       pointerColor: NSColor.red)
         solarSystemNode.addChildNode(marsNode)
+        */
         
         // for debugging
         targetNode.addChildNode(makeAxesNode())
@@ -278,7 +283,8 @@ class GameViewController: NSViewController {
         return axesNode
     }
     
-    private class func makeUpVectorNode(usingComputeFunction computePosition: (Date) -> SCNVector3) -> SCNNode {
+    private class func makeUpVectorNode(usingComputeFunction computePosition: (Date) -> SCNVector3,
+                                        withColor color: NSColor, withLength length: CGFloat) -> SCNNode {
         let posNow = computePosition(Date.now)
         
         let threeMonthsFromNow = Calendar.current.date(byAdding: .month, value: 3, to: Date.now)!
@@ -291,11 +297,11 @@ class GameViewController: NSViewController {
         
         let upVec = v3.crossProduct(v6)
         
-        let longUpVec = upVec.extendTo(to: GameViewController.oneAu)
+        let longUpVec = upVec.extendTo(to: length)
         
         print("calculated up vector: \(longUpVec)")
         
-        let cylinderNode = cylinderNode(radius: 1.0, targetPos: longUpVec, withColor: NSColor.white)
+        let cylinderNode = cylinderNode(radius: 1.0, targetPos: longUpVec, withColor: color)
 
         return cylinderNode
     }
@@ -320,17 +326,22 @@ class GameViewController: NSViewController {
         solarBodyNode.geometry?.materials = [textureMaterial]
         solarBodyNode.name = "solarBody"
         
-        // add a cylinder connecting the center of the world to the sun
         if (bodyName != "Sun") {
-            // let cylinderNode = cylinderNode(radius: fullRadius / 4.0, targetPos: fullPos, withColor: pointerColor)
-            // parentNode.addChildNode(cylinderNode)
+            // add a cylinder connecting the center of the world to the sun
+            let cylinderNode = cylinderNode(radius: fullRadius / 4.0, targetPos: fullPos, withColor: pointerColor)
+            cylinderNode.name = "sunConnector"
+            solarBodyNode.addChildNode(cylinderNode)
             
-            let upvecNode = makeUpVectorNode(usingComputeFunction: computePosition)
-            parentNode.addChildNode(upvecNode)
+            // add the up vector
+            let upvecNode = makeUpVectorNode(usingComputeFunction: computePosition, withColor: pointerColor, withLength: fullRadius * 10.0)
+            upvecNode.name = "upVector"
+            solarBodyNode.addChildNode(upvecNode)
         }
 
         parentNode.addChildNode(solarBodyNode)
-        parentNode.worldPosition = fullPos
+        // parentNode.position = fullPos
+        let mtx = SCNMatrix4MakeTranslation(fullPos.x, fullPos.y, fullPos.z)
+        parentNode.setWorldTransform(mtx)
         parentNode.name = bodyName
         
         print("\(solarBodyNode.position) \(solarBodyNode.worldPosition)")
@@ -393,7 +404,7 @@ class GameViewController: NSViewController {
             // let oldPos = node.position.scaleBy(1 / oneAu)
             // print("\(node.name): \(oldPos)")
 
-            let fakeTime = Date.now.addingTimeInterval((elapsedTime * 360.0))
+            let fakeTime = Date.now.addingTimeInterval((elapsedTime * 50.0))
             let planetPos = computePosition(fakeTime)
             
             let fullPos = planetPos.scaleBy(oneAu)
