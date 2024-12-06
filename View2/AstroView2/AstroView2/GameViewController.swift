@@ -7,11 +7,38 @@
 
 import SceneKit
 import QuartzCore
+import SCNMathExtensions
+
+class SceneRendererDelegate: NSObject, SCNSceneRendererDelegate {
+    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        let scene = renderer.scene!
+        let date = Date.now
+        
+        /*
+        moveNode(scene: scene, nodeName: "Sun", forDate: date, moveFunc: PlanetSim.sunPos)
+        moveNode(scene: scene, nodeName: "Mercury", forDate: date, moveFunc: PlanetSim.mercuryPos)
+        moveNode(scene: scene, nodeName: "Venus", forDate: date, moveFunc: PlanetSim.venusPos)
+        moveNode(scene: scene, nodeName: "Earth", forDate: date, moveFunc: PlanetSim.earthPos)
+        moveNode(scene: scene, nodeName: "Moon", forDate: date, moveFunc: PlanetSim.moonPos)
+        moveNode(scene: scene, nodeName: "Mars", forDate: date, moveFunc: PlanetSim.marsPos)
+        */
+    }
+    
+    func moveNode(scene: SCNScene, nodeName: String, forDate: Date, moveFunc: (Date) -> SCNVector3) {
+        let bodyNode = scene.rootNode.childNode(withName: nodeName, recursively: true)!
+        let position = moveFunc(forDate)
+        bodyNode.position = position.scaleBy(GameViewController.oneAu)
+    }
+}
 
 class GameViewController: NSViewController {
     
-    private static let earthRadius: Double = 6378137
-    private static let earthMass: Double = 5.97219e24
+    public static let earthRadius: Double = 1.0
+    public static let earthMass: Double = 5.97219e24
+    public static let oneAuInEarthRadii = 23454.8
+    public static let oneAu: Double = oneAuInEarthRadii * earthRadius
+    
+    private let rendererDelegate = SceneRendererDelegate()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,8 +57,8 @@ class GameViewController: NSViewController {
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 109 * 1.3 * GameViewController.earthRadius)
-        cameraNode.camera?.zFar = 109 * 3 * GameViewController.earthRadius
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 1.1 * GameViewController.oneAu)
+        cameraNode.camera?.zFar = 5 * GameViewController.oneAu
         
         // create and add a light to the scene
         let lightNode = SCNNode()
@@ -44,17 +71,16 @@ class GameViewController: NSViewController {
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = NSColor.darkGray
+        ambientLightNode.light!.color = NSColor.white
         scene.rootNode.addChildNode(ambientLightNode)
         
         // retrieve the SCNView
         let scnView = self.view as! SCNView
         
+        scnView.delegate = rendererDelegate
+        
         // set the scene to the view
         scnView.scene = scene
-        
-        // allows the user to manipulate the camera
-        scnView.allowsCameraControl = true
         
         // show statistics such as fps and timing information
         scnView.showsStatistics = true
@@ -62,11 +88,17 @@ class GameViewController: NSViewController {
         // configure the view
         scnView.backgroundColor = NSColor.black
         
+        //
+        scnView.allowsCameraControl = true
+        scnView.pointOfView = cameraNode
+        
         // Add a click gesture recognizer
+        /*
         let clickGesture = NSClickGestureRecognizer(target: self, action: #selector(handleClick(_:)))
         var gestureRecognizers = scnView.gestureRecognizers
         gestureRecognizers.insert(clickGesture, at: 0)
         scnView.gestureRecognizers = gestureRecognizers
+         */
     }
     
     @objc
@@ -105,109 +137,313 @@ class GameViewController: NSViewController {
         }
     }
     
+    @IBAction func handleViewMercury(_ sender: Any) {
+        viewByName(bodyName: "Mercury")
+    }
+    
+    @IBAction func handleViewVenus(_ sender: Any) {
+        viewByName(bodyName: "Venus")
+    }
+    
     @IBAction func handleViewEarth(_ sender: Any) {
         viewByName(bodyName: "Earth")
     }
     
+    @IBAction func handleViewMars(_ sender: Any) {
+        viewByName(bodyName: "Mars")
+    }
+    
     @IBAction func handleViewSun(_ sender: Any) {
-        viewByName(bodyName: "Sun")
+        // the sun is obviously at distance 0 from the center
+        // of the system, so viewByName won't work
+        
+        let scnView = self.view as! SCNView
+        let scene = scnView.scene!
+        
+        let sunNode = scene.rootNode.childNode(withName: "Sun", recursively: true)!
+        let bodyNode = sunNode.childNode(withName: "solarBody", recursively: true)!
+        let bodyBounds = bodyNode.geometry!.boundingBox
+        
+        // we'll view from .02 AU away
+        let bodyMax = bodyBounds.max
+        let bodyMaxLen = bodyMax.length()
+        let extensionLen = 0.01 * GameViewController.oneAu
+        let newPos = bodyMax.extendBy(by: extensionLen) + sunNode.worldPosition
+        
+        viewSolarBody(bodyNode: sunNode, fromCameraPos: newPos)
     }
     
     private func viewByName(bodyName: String) {
         let scnView = self.view as! SCNView
         let scene = scnView.scene!
         
+        // let bodyNode = scene.rootNode.childNode(withName: bodyName, recursively: true)!.childNode(withName: "solarBody", recursively: true)!
         let bodyNode = scene.rootNode.childNode(withName: bodyName, recursively: true)!
-        let cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)!
+        
+        let bodyPos = bodyNode.worldPosition
+        
+        // view from .01 AU away
+        let extensionLen = 0.01 * GameViewController.oneAu
+        let cameraPos = bodyPos.extendBy(by: extensionLen)
 
-        let bodyPos = bodyNode.position
-        let bodyBounds = bodyNode.geometry!.boundingBox
-        cameraNode.position = SCNVector3(x: 0.0, y: 0.0, z: bodyPos.z + bodyBounds.max.z + 1000)
+        viewSolarBody(bodyNode: bodyNode, fromCameraPos: cameraPos)
+    }
+    
+    private func viewSolarBody(bodyNode: SCNNode, fromCameraPos: SCNVector3) {
+        let scnView = self.view as! SCNView
+        let cameraPos = fromCameraPos
+        
+        let cameraNode = scnView.pointOfView!
+        let camera = cameraNode.camera!
+        camera.zNear = 0.005 * GameViewController.oneAu
+        camera.zFar = 1.5 * GameViewController.oneAu
+        
+        let oldPos = cameraNode.position
+        let geometryNode = bodyNode.childNode(withName: "solarBody", recursively: true)!
+        let bodyBounds = geometryNode.geometry!.boundingBox
 
-        let lookAtConstraint = SCNLookAtConstraint(target: bodyNode)
-        cameraNode.constraints = [lookAtConstraint]
+        print("targetNode pos = \(bodyNode.position) \(bodyNode.position.length() / GameViewController.oneAu)")
+        print("cameraNode oldPos = \(oldPos) \(oldPos.length() / GameViewController.oneAu)")
+        print("cameraNode newPos = \(cameraPos) len = \(cameraPos.length() / GameViewController.oneAu)")
+        print("camera z =\(cameraNode.camera?.zNear) \(cameraNode.camera?.zFar)")
+        print("geometry bounds = \(bodyBounds)")
+        let parentBounds = bodyNode.boundingBox
+        print("parent bounds = \(parentBounds)")
 
-        /*
-        let bodyZ = bodyNode.position.z
-        let bodyBounds = bodyNode.geometry!.boundingBox
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: bodyZ + bodyBounds.max.z + 1000)
-        */
-        /*
-        */
+        cameraNode.position = cameraPos
+        cameraNode.look(at: cameraPos.scaleBy(-1.0))
+        print("cameraNode up = \(cameraNode.worldUp)")
+
+        // cameraNode.constraints = [SCNLookAtConstraint(target: bodyNode)]
+
+        let mightBeVisible = scnView.isNode(bodyNode, insideFrustumOf: cameraNode)
+        print("target node might be visible: \(mightBeVisible)")
     }
     
     private class func addSolarBodies(targetNode: SCNNode) {
-        let sunNode = solarSystemBody(bodyName: "Sun", earthMassFraction: 333030,
-                                      earthRadiusFraction: 109, earthRadiusOrbit: 0,
-                                      textureName: "Solarsystemscope_texture_8k_sun",
-                                      computePosition: { d in return SCNVector3(x: 0, y: 0, z: 0) })
-        targetNode.addChildNode(sunNode)
-
-        let mercuryNode = solarSystemBody(bodyName: "Mercury", earthMassFraction: 0.055,
-                                          earthRadiusFraction: 0.3829, earthRadiusOrbit: 0.38,
-                                          textureName: "Solarsystemscope_texture_8k_mercury",
-                                          computePosition: PlanetSim.mercuryPos)
-        targetNode.addChildNode(mercuryNode)
-
-        let venusNode = solarSystemBody(bodyName: "Venus", earthMassFraction: 0.815,
-                                        earthRadiusFraction: 0.9499, earthRadiusOrbit: 0.72332,
-                                          textureName: "2k_venus_surface",
-                                        computePosition: PlanetSim.venusPos)
-        targetNode.addChildNode(venusNode)
-
-        let earthNode = solarSystemBody(bodyName: "Earth", earthMassFraction: 1,
-                                        earthRadiusFraction: 1, earthRadiusOrbit: 1,
-                                        textureName: "Solarsystemscope_texture_8k_earth_daymap",
-                                        computePosition: PlanetSim.earthPos)
-        targetNode.addChildNode(earthNode)
+        let solarSystemNode = SCNNode();
+        targetNode.addChildNode(solarSystemNode)
         
-        let marsNode = solarSystemBody(bodyName: "Mars", earthMassFraction: 0.107,
-                                       earthRadiusFraction: 0.533, earthRadiusOrbit: 1.523,
+        let sunNode = solarSystemBody(bodyName: "Sun",
+                                      earthRadiusFraction: 109.0,
+                                      textureName: "Solarsystemscope_texture_8k_sun",
+                                      computePosition: PlanetSim.sunPos,
+                                      pointerColor: NSColor.clear)
+        solarSystemNode.addChildNode(sunNode)
+
+        let mercuryNode = solarSystemBody(bodyName: "Mercury",
+                                          earthRadiusFraction: 0.3829,
+                                          textureName: "Solarsystemscope_texture_8k_mercury",
+                                          computePosition: PlanetSim.mercuryPos,
+                                          pointerColor: NSColor.green)
+        solarSystemNode.addChildNode(mercuryNode)
+
+        let venusNode = solarSystemBody(bodyName: "Venus",
+                                        earthRadiusFraction: 0.9499,
+                                          textureName: "2k_venus_surface",
+                                        computePosition: PlanetSim.venusPos,
+                                        pointerColor: NSColor.orange)
+        solarSystemNode.addChildNode(venusNode)
+        
+        let earthNode = solarSystemBody(bodyName: "Earth",
+                                        earthRadiusFraction: 1,
+                                        textureName: "Solarsystemscope_texture_8k_earth_daymap",
+                                        computePosition: PlanetSim.earthPos,
+                                        pointerColor: NSColor.yellow)
+        solarSystemNode.addChildNode(earthNode)
+        
+        let moonNode = solarSystemBody(bodyName: "Moon",
+                                       earthRadiusFraction: 0.2725,
+                                        textureName: "2k_moon",
+                                        computePosition: PlanetSim.moonPos,
+                                       pointerColor: NSColor.white)
+        solarSystemNode.addChildNode(moonNode)
+        
+        let marsNode = solarSystemBody(bodyName: "Mars",
+                                       earthRadiusFraction: 0.533,
                                         textureName: "2k_mars",
-                                       computePosition: PlanetSim.marsPos)
-        targetNode.addChildNode(marsNode)
+                                       computePosition: PlanetSim.marsPos,
+                                       pointerColor: NSColor.red)
+        solarSystemNode.addChildNode(marsNode)
+
+        let jupiterNode = solarSystemBody(bodyName: "Jupiter",
+                                       earthRadiusFraction: 11.21,
+                                        textureName: "2k_jupiter",
+                                       computePosition: PlanetSim.jupiterPos,
+                                       pointerColor: NSColor.red)
+        solarSystemNode.addChildNode(jupiterNode)
+
+        let saturnNode = solarSystemBody(bodyName: "Saturn",
+                                         earthRadiusFraction: 9.45,
+                                        textureName: "2k_saturn",
+                                       computePosition: PlanetSim.saturnPos,
+                                       pointerColor: NSColor.red)
+        solarSystemNode.addChildNode(saturnNode)
+
+        let uranusNode = solarSystemBody(bodyName: "Uranus",
+                                         earthRadiusFraction: 4.01,
+                                        textureName: "2k_uranus",
+                                         computePosition: PlanetSim.uranusPos,
+                                       pointerColor: NSColor.red)
+        solarSystemNode.addChildNode(uranusNode)
+
+        let neptuneNode = solarSystemBody(bodyName: "Neptune",
+                                          earthRadiusFraction: 3.88,
+                                        textureName: "2k_neptune",
+                                       computePosition: PlanetSim.neptunePos,
+                                       pointerColor: NSColor.red)
+        solarSystemNode.addChildNode(neptuneNode)
+
+        solarSystemNode.position = SCNVector3(0.0, 0.0, 1000.0)
+        
+        // for debugging
+        targetNode.addChildNode(makeAxesNode())
+    }
+    
+    private class func sphereNode(at: SCNVector3, withColor: NSColor) -> SCNNode {
+        let sphere = SCNSphere(radius: GameViewController.oneAu / 100.0)
+        sphere.firstMaterial?.diffuse.contents = withColor
+        sphere.firstMaterial?.specular.contents = withColor
+        sphere.firstMaterial?.shininess = 0.0
+        
+        let sphereNode = SCNNode()
+        sphereNode.position = at
+        sphereNode.geometry = sphere
+        return sphereNode
+    }
+    
+    private class func makeAxesNode() -> SCNNode {
+        let axesNode = SCNNode()
+        let xGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(GameViewController.oneAu, 0.0, 0.0), withColor: NSColor.cyan)
+        let yGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(0.0, GameViewController.oneAu, 0.0), withColor: NSColor.yellow)
+        let zGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(0.0, 0.0, GameViewController.oneAu), withColor: NSColor.magenta)
+        
+        axesNode.addChildNode(xGeom)
+        axesNode.addChildNode(yGeom)
+        axesNode.addChildNode(zGeom)
+
+        /*
+        // draw markers
+        let stepSize = 0.05
+        for step in stride(from: stepSize, through: 1.0, by: stepSize) {
+            axesNode.addChildNode(sphereNode(at: SCNVector3(GameViewController.oneAu * step, 0.0, 0.0), withColor: NSColor.white))
+            axesNode.addChildNode(sphereNode(at: SCNVector3(0.0, GameViewController.oneAu * step, 0.0), withColor: NSColor.white))
+            axesNode.addChildNode(sphereNode(at: SCNVector3(0.0, 0.0, GameViewController.oneAu * step), withColor: NSColor.white))
+        }
+         */
+
+        axesNode.name = "axes"
+        return axesNode
+    }
+    
+    private class func makeUpVectorNode(usingComputeFunction computePosition: (Date) -> SCNVector3,
+                                        withColor color: NSColor, withLength length: CGFloat) -> SCNNode {
+        let posNow = computePosition(Date.now)
+        
+        let threeMonthsFromNow = Calendar.current.date(byAdding: .month, value: 3, to: Date.now)!
+        let sixMonthsFromNow = Calendar.current.date(byAdding: .month, value: 6, to: Date.now)!
+        let pos3Months = computePosition(threeMonthsFromNow)
+        let pos6Months = computePosition(sixMonthsFromNow)
+        
+        let v3 = SCNVector3(pos3Months.x - posNow.x, pos3Months.y - posNow.y, pos3Months.z - posNow.z)
+        let v6 = SCNVector3(pos6Months.x - posNow.x, pos6Months.y - posNow.y, pos6Months.z - posNow.z)
+        
+        let upVec = v3.crossProduct(v6)
+        
+        let longUpVec = upVec.extendTo(to: length)
+        
+        print("calculated up vector: \(longUpVec)")
+        
+        let cylinderNode = cylinderNode(radius: 1.0, targetPos: longUpVec, withColor: color)
+
+        return cylinderNode
     }
 
-    private class func solarSystemBody(bodyName: String, earthMassFraction: Double, earthRadiusFraction: Double,
-                                       earthRadiusOrbit: Double, textureName: String,
-                                       computePosition: @escaping (Date) -> SCNVector3) -> SCNNode {
-        let oneAuInEarthRadii = 23454.8
-        
+    private class func solarSystemBody(bodyName: String, earthRadiusFraction: Double,
+                                       textureName: String,
+                                       computePosition: @escaping (Date) -> SCNVector3,
+                                       pointerColor: NSColor) -> SCNNode {
         let fullRadius = earthRadiusFraction * GameViewController.earthRadius
-        let fullDistance = earthRadiusOrbit * oneAuInEarthRadii * GameViewController.earthRadius
+        
+        let parentNode = SCNNode()
         
         let sphere = SCNSphere(radius: fullRadius)
-        let node = SCNNode( geometry: sphere)
+        let solarBodyNode = SCNNode( geometry: sphere)
         let textureMaterial = SCNMaterial()
         let mainBundle = Bundle.main
         let resourcePath = mainBundle.path(forResource: textureName, ofType: "jpg", inDirectory: "art.scnassets")
         let myImage = NSImage(byReferencingFile: resourcePath!)!
+        let nodePos = computePosition(Date.now)
+        let fullPos = nodePos.scaleBy(GameViewController.oneAu)
         textureMaterial.diffuse.contents = myImage
-        node.geometry?.materials = [textureMaterial]
-        node.name = bodyName
-        node.position = SCNVector3(x: 0, y: 0, z: fullDistance)
-        node.addAnimation(axialRotationAnimation(), forKey: "rotation about axis")
-        node.runAction(moveBody(computePosition: computePosition))
-        return node
+        solarBodyNode.geometry?.materials = [textureMaterial]
+        solarBodyNode.name = "solarBody"
+        
+        if (bodyName != "Sun") {
+            // add a cylinder connecting the center of the world to the sun
+            let cylinderNode = cylinderNode(radius: fullRadius / 4.0, targetPos: fullPos.scaleBy(-1.0), withColor: pointerColor)
+            cylinderNode.name = "sunConnector"
+            parentNode.addChildNode(cylinderNode)
+            
+            // add the up vector
+            let upvecNode = makeUpVectorNode(usingComputeFunction: computePosition, withColor: pointerColor, withLength: fullRadius * 10.0)
+            upvecNode.name = "upVector"
+            parentNode.addChildNode(upvecNode)
+        }
+
+        parentNode.addChildNode(solarBodyNode)
+        // parentNode.position = fullPos
+        let mtx = SCNMatrix4MakeTranslation(fullPos.x, fullPos.y, fullPos.z)
+        parentNode.setWorldTransform(mtx)
+        parentNode.name = bodyName
+        
+        print("\(solarBodyNode.position) \(solarBodyNode.worldPosition)")
+        print("\(parentNode.position) \(parentNode.worldPosition)")
+        print("parent pivot: \(parentNode.pivot)")
+        print("body pivot: \(solarBodyNode.pivot)")
+        print("parent simdPosition: \(parentNode.simdPosition)")
+        print("parent simdTransform: \(parentNode.simdTransform)")
+        // node.addAnimation(axialRotationAnimation(), forKey: "rotation about axis")
+
+        return parentNode
+    }
+    
+    private class func cylinderNode(radius: CGFloat, targetPos: SCNVector3, withColor: NSColor) -> SCNNode {
+        let cylMaterial = SCNMaterial()
+        cylMaterial.diffuse.contents = withColor
+
+        /*
+        let cylinder = SCNCylinder(radius: 109, height: targetPos.length())
+        cylinder.materials = [cylMaterial]
+        */
+        
+        let cylinderGeom = lineFrom(vector: SCNVector3(0.0, 0.0, 0.0), toVector: targetPos)
+        let cylinderNode = SCNNode(geometry: cylinderGeom)
+        cylinderGeom.materials = [cylMaterial]
+
+        // calc elevation and azimuth to that position
+        /*
+        let azimuthElevation = targetPos.azimuthElevation
+
+        let xzRotate = SCNVector3(0.0, 1.0, 0.0).quaternion(fromAngleRadians: azimuthElevation.azimuth)
+        let yRotate = SCNVector3(targetPos.x, 0.0, targetPos.z).quaternion(fromAngleRadians: azimuthElevation.elevation)
+        
+        cylinderNode.rotate(by: xzRotate, aroundTarget: SCNVector3(0.0, 1.0, 0.0))
+        cylinderNode.rotate(by: yRotate, aroundTarget: SCNVector3(targetPos.x, 0.0, targetPos.z))
+        */
+        
+        // done
+        return cylinderNode
     }
 
-    private class func solarSystemBody_old(bodyName: String, earthMassFraction: Double, earthRadiusFraction: Double,
-                                       earthRadiusOrbit: Double, textureName: String) -> SCNNode {
-        let fullRadius = earthRadiusFraction * GameViewController.earthRadius
-        let fullDistance = earthRadiusOrbit * GameViewController.earthRadius
-        let fullMass = earthMassFraction * GameViewController.earthMass
-        
-        let sphere = SCNSphere(radius: fullRadius)
-        let node = SCNNode( geometry: sphere)
-        var textureMaterial = SCNMaterial()
-        let mainBundle = Bundle.main
-        let resourcePath = mainBundle.path(forResource: textureName, ofType: "jpg", inDirectory: "art.scnassets")
-        let myImage = NSImage(byReferencingFile: resourcePath!)!
-        textureMaterial.diffuse.contents = myImage
-        node.geometry?.materials = [textureMaterial]
-        node.name = bodyName
-        node.position = SCNVector3(x: 0, y: 0, z: fullDistance)
-        return node
+    class func lineFrom(vector vector1: SCNVector3, toVector vector2: SCNVector3) -> SCNGeometry {
+        let indices: [Int32] = [0, 1]
+
+        let source = SCNGeometrySource(vertices: [vector1, vector2])
+        let element = SCNGeometryElement(indices: indices, primitiveType: .line)
+
+        return SCNGeometry(sources: [source], elements: [element])
+
     }
     
     private class func axialRotationAnimation() -> CAAnimation {
@@ -221,13 +457,17 @@ class GameViewController: NSViewController {
     }
     
     private class func moveBody(computePosition: @escaping (Date) -> SCNVector3) -> SCNAction {
-        let earthRadiusOrbit = 23454.8
-        let fullDistance = earthRadiusOrbit * GameViewController.earthRadius
-
         let moveTo = SCNAction.customAction(duration: 1000.0) { node, elapsedTime in
-            let fakeTime = Date.now.addingTimeInterval((elapsedTime * 360.0))
-            let earthPos = computePosition(fakeTime)
-            node.position = SCNVector3(earthPos.x * fullDistance, earthPos.y * fullDistance, earthPos.z * fullDistance)
+            // let oldPos = node.position.scaleBy(1 / oneAu)
+            // print("\(node.name): \(oldPos)")
+
+            let fakeTime = Date.now.addingTimeInterval((elapsedTime * 50.0))
+            let planetPos = computePosition(fakeTime)
+            
+            let fullPos = planetPos.scaleBy(oneAu)
+            // print("\(node.name): \(planetPos)")
+            
+            node.position = fullPos
         }
         
         return moveTo

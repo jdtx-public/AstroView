@@ -1,0 +1,15 @@
+{
+  "originHash" : "2801ef271729ba0e362ccd49e25eb5764b953aeb30c191328f3083dc402396c7",
+  "pins" : [
+    {
+      "identity" : "scnmathextensions",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/capnslipp/SCNMathExtensions.git",
+      "state" : {
+        "revision" : "046ba6afa86ff6232acb2963d2a3ea4dec5cd728",
+        "version" : "1.4.7"
+      }
+    }
+  ],
+  "version" : 3
+}
