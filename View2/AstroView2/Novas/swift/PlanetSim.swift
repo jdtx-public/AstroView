@@ -65,12 +65,36 @@ public class PlanetSim {
         return _mars.position(d: d)
     }
     
+    static func jupiterPos(d: Date) -> SCNVector3 {
+        checkEphemeris()
+        return _jupiter.position(d: d)
+    }
+    
+    static func saturnPos(d: Date) -> SCNVector3 {
+        checkEphemeris()
+        return _saturn.position(d: d)
+    }
+    
+    static func uranusPos(d: Date) -> SCNVector3 {
+        checkEphemeris()
+        return _uranus.position(d: d)
+    }
+    
+    static func neptunePos(d: Date) -> SCNVector3 {
+        checkEphemeris()
+        return _neptune.position(d: d)
+    }
+    
     private static let _sun = EphemerisPlanet(planet: NOVAS_SUN)
     private static let _mercury = EphemerisPlanet(planet: NOVAS_MERCURY)
     private static let _venus = EphemerisPlanet(planet: NOVAS_VENUS)
     private static let _earth = EphemerisPlanet(planet: NOVAS_EARTH)
     private static let _moon = EphemerisPlanet(planet: NOVAS_MOON)
     private static let _mars = EphemerisPlanet(planet: NOVAS_MARS)
-    
+    private static let _jupiter = EphemerisPlanet(planet: NOVAS_JUPITER)
+    private static let _saturn = EphemerisPlanet(planet: NOVAS_SATURN)
+    private static let _uranus = EphemerisPlanet(planet: NOVAS_URANUS)
+    private static let _neptune = EphemerisPlanet(planet: NOVAS_NEPTUNE)
+
     private static let _ephemeris = Ephemeris()
 }

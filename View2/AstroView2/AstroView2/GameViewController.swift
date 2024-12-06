@@ -57,7 +57,7 @@ class GameViewController: NSViewController {
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 109 * 1.3 * GameViewController.earthRadius)
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 1.1 * GameViewController.oneAu)
         cameraNode.camera?.zFar = 5 * GameViewController.oneAu
         
         // create and add a light to the scene
@@ -160,16 +160,17 @@ class GameViewController: NSViewController {
         let scnView = self.view as! SCNView
         let scene = scnView.scene!
         
-        let bodyNode = scene.rootNode.childNode(withName: "Sun", recursively: true)!.childNode(withName: "Sun", recursively: true)!
+        let sunNode = scene.rootNode.childNode(withName: "Sun", recursively: true)!
+        let bodyNode = sunNode.childNode(withName: "solarBody", recursively: true)!
         let bodyBounds = bodyNode.geometry!.boundingBox
         
         // we'll view from .02 AU away
         let bodyMax = bodyBounds.max
         let bodyMaxLen = bodyMax.length()
         let extensionLen = 0.01 * GameViewController.oneAu
-        let newPos = bodyMax.extendBy(by: extensionLen)
+        let newPos = bodyMax.extendBy(by: extensionLen) + sunNode.worldPosition
         
-        viewSolarBody(bodyNode: bodyNode, fromCameraPos: newPos)
+        viewSolarBody(bodyNode: sunNode, fromCameraPos: newPos)
     }
     
     private func viewByName(bodyName: String) {
@@ -181,7 +182,7 @@ class GameViewController: NSViewController {
         
         let bodyPos = bodyNode.worldPosition
         
-        // view from .02 AU away
+        // view from .01 AU away
         let extensionLen = 0.01 * GameViewController.oneAu
         let cameraPos = bodyPos.extendBy(by: extensionLen)
 
@@ -224,7 +225,7 @@ class GameViewController: NSViewController {
         targetNode.addChildNode(solarSystemNode)
         
         let sunNode = solarSystemBody(bodyName: "Sun",
-                                      earthRadiusFraction: 109,
+                                      earthRadiusFraction: 109.0,
                                       textureName: "Solarsystemscope_texture_8k_sun",
                                       computePosition: PlanetSim.sunPos,
                                       pointerColor: NSColor.clear)
@@ -244,7 +245,6 @@ class GameViewController: NSViewController {
                                         pointerColor: NSColor.orange)
         solarSystemNode.addChildNode(venusNode)
         
-        /*
         let earthNode = solarSystemBody(bodyName: "Earth",
                                         earthRadiusFraction: 1,
                                         textureName: "Solarsystemscope_texture_8k_earth_daymap",
@@ -265,10 +265,51 @@ class GameViewController: NSViewController {
                                        computePosition: PlanetSim.marsPos,
                                        pointerColor: NSColor.red)
         solarSystemNode.addChildNode(marsNode)
-        */
+
+        let jupiterNode = solarSystemBody(bodyName: "Jupiter",
+                                       earthRadiusFraction: 11.21,
+                                        textureName: "2k_jupiter",
+                                       computePosition: PlanetSim.jupiterPos,
+                                       pointerColor: NSColor.red)
+        solarSystemNode.addChildNode(jupiterNode)
+
+        let saturnNode = solarSystemBody(bodyName: "Saturn",
+                                         earthRadiusFraction: 9.45,
+                                        textureName: "2k_saturn",
+                                       computePosition: PlanetSim.saturnPos,
+                                       pointerColor: NSColor.red)
+        solarSystemNode.addChildNode(saturnNode)
+
+        let uranusNode = solarSystemBody(bodyName: "Uranus",
+                                         earthRadiusFraction: 4.01,
+                                        textureName: "2k_uranus",
+                                         computePosition: PlanetSim.uranusPos,
+                                       pointerColor: NSColor.red)
+        solarSystemNode.addChildNode(uranusNode)
+
+        let neptuneNode = solarSystemBody(bodyName: "Neptune",
+                                          earthRadiusFraction: 3.88,
+                                        textureName: "2k_neptune",
+                                       computePosition: PlanetSim.neptunePos,
+                                       pointerColor: NSColor.red)
+        solarSystemNode.addChildNode(neptuneNode)
+
+        solarSystemNode.position = SCNVector3(0.0, 0.0, 1000.0)
         
         // for debugging
         targetNode.addChildNode(makeAxesNode())
+    }
+    
+    private class func sphereNode(at: SCNVector3, withColor: NSColor) -> SCNNode {
+        let sphere = SCNSphere(radius: GameViewController.oneAu / 100.0)
+        sphere.firstMaterial?.diffuse.contents = withColor
+        sphere.firstMaterial?.specular.contents = withColor
+        sphere.firstMaterial?.shininess = 0.0
+        
+        let sphereNode = SCNNode()
+        sphereNode.position = at
+        sphereNode.geometry = sphere
+        return sphereNode
     }
     
     private class func makeAxesNode() -> SCNNode {
@@ -276,9 +317,21 @@ class GameViewController: NSViewController {
         let xGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(GameViewController.oneAu, 0.0, 0.0), withColor: NSColor.cyan)
         let yGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(0.0, GameViewController.oneAu, 0.0), withColor: NSColor.yellow)
         let zGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(0.0, 0.0, GameViewController.oneAu), withColor: NSColor.magenta)
+        
         axesNode.addChildNode(xGeom)
         axesNode.addChildNode(yGeom)
         axesNode.addChildNode(zGeom)
+
+        /*
+        // draw markers
+        let stepSize = 0.05
+        for step in stride(from: stepSize, through: 1.0, by: stepSize) {
+            axesNode.addChildNode(sphereNode(at: SCNVector3(GameViewController.oneAu * step, 0.0, 0.0), withColor: NSColor.white))
+            axesNode.addChildNode(sphereNode(at: SCNVector3(0.0, GameViewController.oneAu * step, 0.0), withColor: NSColor.white))
+            axesNode.addChildNode(sphereNode(at: SCNVector3(0.0, 0.0, GameViewController.oneAu * step), withColor: NSColor.white))
+        }
+         */
+
         axesNode.name = "axes"
         return axesNode
     }
@@ -328,14 +381,14 @@ class GameViewController: NSViewController {
         
         if (bodyName != "Sun") {
             // add a cylinder connecting the center of the world to the sun
-            let cylinderNode = cylinderNode(radius: fullRadius / 4.0, targetPos: fullPos, withColor: pointerColor)
+            let cylinderNode = cylinderNode(radius: fullRadius / 4.0, targetPos: fullPos.scaleBy(-1.0), withColor: pointerColor)
             cylinderNode.name = "sunConnector"
-            solarBodyNode.addChildNode(cylinderNode)
+            parentNode.addChildNode(cylinderNode)
             
             // add the up vector
             let upvecNode = makeUpVectorNode(usingComputeFunction: computePosition, withColor: pointerColor, withLength: fullRadius * 10.0)
             upvecNode.name = "upVector"
-            solarBodyNode.addChildNode(upvecNode)
+            parentNode.addChildNode(upvecNode)
         }
 
         parentNode.addChildNode(solarBodyNode)
@@ -346,6 +399,10 @@ class GameViewController: NSViewController {
         
         print("\(solarBodyNode.position) \(solarBodyNode.worldPosition)")
         print("\(parentNode.position) \(parentNode.worldPosition)")
+        print("parent pivot: \(parentNode.pivot)")
+        print("body pivot: \(solarBodyNode.pivot)")
+        print("parent simdPosition: \(parentNode.simdPosition)")
+        print("parent simdTransform: \(parentNode.simdTransform)")
         // node.addAnimation(axialRotationAnimation(), forKey: "rotation about axis")
 
         return parentNode
@@ -360,7 +417,7 @@ class GameViewController: NSViewController {
         cylinder.materials = [cylMaterial]
         */
         
-        let cylinderGeom = lineFrom(vector: SCNVector3(0.0, 0.0, 0.0), toVector: targetPos.scaleBy(-1.0))
+        let cylinderGeom = lineFrom(vector: SCNVector3(0.0, 0.0, 0.0), toVector: targetPos)
         let cylinderNode = SCNNode(geometry: cylinderGeom)
         cylinderGeom.materials = [cylMaterial]
 
