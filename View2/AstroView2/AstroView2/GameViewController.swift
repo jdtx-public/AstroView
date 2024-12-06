@@ -8,6 +8,7 @@
 import SceneKit
 import QuartzCore
 import SCNMathExtensions
+import Algorithms
 
 class SceneRendererDelegate: NSObject, SCNSceneRendererDelegate {
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
@@ -37,6 +38,7 @@ class GameViewController: NSViewController {
     public static let earthMass: Double = 5.97219e24
     public static let oneAuInEarthRadii = 23454.8
     public static let oneAu: Double = oneAuInEarthRadii * earthRadius
+    public static let secondsInYear: Double = 3600.0 * 24.0 * 365.25
     
     private let rendererDelegate = SceneRendererDelegate()
     
@@ -202,6 +204,7 @@ class GameViewController: NSViewController {
         let geometryNode = bodyNode.childNode(withName: "solarBody", recursively: true)!
         let bodyBounds = geometryNode.geometry!.boundingBox
 
+        /*
         print("targetNode pos = \(bodyNode.position) \(bodyNode.position.length() / GameViewController.oneAu)")
         print("cameraNode oldPos = \(oldPos) \(oldPos.length() / GameViewController.oneAu)")
         print("cameraNode newPos = \(cameraPos) len = \(cameraPos.length() / GameViewController.oneAu)")
@@ -209,10 +212,11 @@ class GameViewController: NSViewController {
         print("geometry bounds = \(bodyBounds)")
         let parentBounds = bodyNode.boundingBox
         print("parent bounds = \(parentBounds)")
+        */
 
         cameraNode.position = cameraPos
         cameraNode.look(at: cameraPos.scaleBy(-1.0))
-        print("cameraNode up = \(cameraNode.worldUp)")
+        // print("cameraNode up = \(cameraNode.worldUp)")
 
         // cameraNode.constraints = [SCNLookAtConstraint(target: bodyNode)]
 
@@ -389,6 +393,10 @@ class GameViewController: NSViewController {
             let upvecNode = makeUpVectorNode(usingComputeFunction: computePosition, withColor: pointerColor, withLength: fullRadius * 10.0)
             upvecNode.name = "upVector"
             parentNode.addChildNode(upvecNode)
+            
+            // add the orbit too
+            let orbitNode = makeOrbitNode(computePosition: computePosition, withColor: pointerColor)
+            parentNode.addChildNode(orbitNode)
         }
 
         parentNode.addChildNode(solarBodyNode)
@@ -396,42 +404,66 @@ class GameViewController: NSViewController {
         let mtx = SCNMatrix4MakeTranslation(fullPos.x, fullPos.y, fullPos.z)
         parentNode.setWorldTransform(mtx)
         parentNode.name = bodyName
-        
+
+        /*
         print("\(solarBodyNode.position) \(solarBodyNode.worldPosition)")
         print("\(parentNode.position) \(parentNode.worldPosition)")
         print("parent pivot: \(parentNode.pivot)")
         print("body pivot: \(solarBodyNode.pivot)")
         print("parent simdPosition: \(parentNode.simdPosition)")
         print("parent simdTransform: \(parentNode.simdTransform)")
+        */
         // node.addAnimation(axialRotationAnimation(), forKey: "rotation about axis")
 
         return parentNode
     }
     
+    private class func makeOrbitNode(computePosition: @escaping (Date) -> SCNVector3, withColor color: NSColor) -> SCNNode {
+        let orbitMaterial = SCNMaterial()
+        orbitMaterial.diffuse.contents = color
+
+        // build the geometry
+        let numSteps: Int32 = 50
+        let indices: [Int32] = Array(Int32(0)...numSteps)
+        let stride = (1.0 / CGFloat(numSteps)) * secondsInYear
+        let dates = indices.map { Date.now.advanced(by: Double($0) * stride) }
+        let positions = dates.map { computePosition($0).scaleBy(GameViewController.oneAu) }
+        
+        // remember that the positions all need to be relative to now because
+        // the planet's position is the parent node position
+        let positions2 = positions.map { SCNVector3(x: $0.x - positions[0].x, y: $0.y - positions[0].y, z: $0.z - positions[0].z) }
+
+        /*
+        let positionPairs = positions2.adjacentPairs()
+        let index01: [Int32] = [0, 1]
+        let pairsSource = positionPairs.map { SCNGeometrySource(vertices: [ $0.0, $0.1 ]) }
+        let elementSource = positionPairs.map { _ in SCNGeometryElement(indices: index01, primitiveType: .line) }
+        
+        let sources = Array(pairsSource)
+        let elements = Array(elementSource)
+        */
+        
+        let sources = [SCNGeometrySource(vertices: positions2)]
+        let elements = [SCNGeometryElement(indices: indices, primitiveType: .line)]
+        
+        let orbitGeom = SCNGeometry(sources: sources, elements: elements)
+        orbitGeom.materials = [orbitMaterial]
+
+        let orbitNode = SCNNode(geometry: orbitGeom)
+        orbitNode.name = "orbit"
+        
+        // done
+        return orbitNode
+    }
+    
     private class func cylinderNode(radius: CGFloat, targetPos: SCNVector3, withColor: NSColor) -> SCNNode {
         let cylMaterial = SCNMaterial()
         cylMaterial.diffuse.contents = withColor
-
-        /*
-        let cylinder = SCNCylinder(radius: 109, height: targetPos.length())
-        cylinder.materials = [cylMaterial]
-        */
         
         let cylinderGeom = lineFrom(vector: SCNVector3(0.0, 0.0, 0.0), toVector: targetPos)
         let cylinderNode = SCNNode(geometry: cylinderGeom)
         cylinderGeom.materials = [cylMaterial]
 
-        // calc elevation and azimuth to that position
-        /*
-        let azimuthElevation = targetPos.azimuthElevation
-
-        let xzRotate = SCNVector3(0.0, 1.0, 0.0).quaternion(fromAngleRadians: azimuthElevation.azimuth)
-        let yRotate = SCNVector3(targetPos.x, 0.0, targetPos.z).quaternion(fromAngleRadians: azimuthElevation.elevation)
-        
-        cylinderNode.rotate(by: xzRotate, aroundTarget: SCNVector3(0.0, 1.0, 0.0))
-        cylinderNode.rotate(by: yRotate, aroundTarget: SCNVector3(targetPos.x, 0.0, targetPos.z))
-        */
-        
         // done
         return cylinderNode
     }

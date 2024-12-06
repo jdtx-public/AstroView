@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1FF5B5D82CFBCF9C00B06698 /* SCNMathExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */; };
+		1FF5B67A2D02853700B06698 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 1FF5B6792D02853700B06698 /* Algorithms */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FF5B67A2D02853700B06698 /* Algorithms in Frameworks */,
 				1FF5B5D82CFBCF9C00B06698 /* SCNMathExtensions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -161,6 +163,7 @@
 			name = AstroView2;
 			packageProductDependencies = (
 				1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */,
+				1FF5B6792D02853700B06698 /* Algorithms */,
 			);
 			productName = AstroView2;
 			productReference = 1FFFBCBC2CE9807E00A00A51 /* AstroView2.app */;
@@ -247,6 +250,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */,
+				1FF5B6782D02853700B06698 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1FFFBCBD2CE9807E00A00A51 /* Products */;
@@ -611,6 +615,14 @@
 				minimumVersion = 1.4.7;
 			};
 		};
+		1FF5B6782D02853700B06698 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -618,6 +630,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */;
 			productName = SCNMathExtensions;
+		};
+		1FF5B6792D02853700B06698 /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1FF5B6782D02853700B06698 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
