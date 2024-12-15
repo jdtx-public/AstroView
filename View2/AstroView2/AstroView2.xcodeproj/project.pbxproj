@@ -251,6 +251,7 @@
 			packageReferences = (
 				1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */,
 				1FF5B6782D02853700B06698 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				1F72C2692D0E2AF200AB1BDF /* XCLocalSwiftPackageReference "../../../SwiftSpice/mac/SwiftSpice" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1FFFBCBD2CE9807E00A00A51 /* Products */;
@@ -605,6 +606,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1F72C2692D0E2AF200AB1BDF /* XCLocalSwiftPackageReference "../../../SwiftSpice/mac/SwiftSpice" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../SwiftSpice/mac/SwiftSpice;
+		};
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */ = {

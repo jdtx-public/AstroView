@@ -423,35 +423,48 @@ class GameViewController: NSViewController {
         orbitMaterial.diffuse.contents = color
 
         // build the geometry
-        let numSteps: Int32 = 50
+        let numSteps: Int32 = 30
         let indices: [Int32] = Array(Int32(0)...numSteps)
         let stride = (1.0 / CGFloat(numSteps)) * secondsInYear
         let dates = indices.map { Date.now.advanced(by: Double($0) * stride) }
-        let positions = dates.map { computePosition($0).scaleBy(GameViewController.oneAu) }
+        let julianDates = dates.map(\.julian2)
+        let rawPositions = dates.map { computePosition($0) }
+        let positions = rawPositions.map { $0.scaleBy(GameViewController.oneAu) }
+        
+        let orbitNode = SCNNode()
+        orbitNode.name = "orbit"
         
         // remember that the positions all need to be relative to now because
         // the planet's position is the parent node position
-        let positions2 = positions.map { SCNVector3(x: $0.x - positions[0].x, y: $0.y - positions[0].y, z: $0.z - positions[0].z) }
+        let positions2 = positions.map { $0.subtracted(by: positions[0]) }
 
+        let positionPairs = Array(positions2.adjacentPairs())
+        let vectorLens = positionPairs.map { $0.0.distance(to: $0.1) }
+        let lineGeoms = positionPairs.map { lineFrom(vector: $0.0, toVector: $0.1) }
+        for oneGeom in lineGeoms {
+            let oneNode = SCNNode(geometry: oneGeom)
+            oneNode.geometry?.materials = [orbitMaterial]
+            orbitNode.addChildNode(oneNode)
+        }
+        
         /*
-        let positionPairs = positions2.adjacentPairs()
         let index01: [Int32] = [0, 1]
         let pairsSource = positionPairs.map { SCNGeometrySource(vertices: [ $0.0, $0.1 ]) }
         let elementSource = positionPairs.map { _ in SCNGeometryElement(indices: index01, primitiveType: .line) }
         
         let sources = Array(pairsSource)
         let elements = Array(elementSource)
-        */
-        
+
         let sources = [SCNGeometrySource(vertices: positions2)]
         let elements = [SCNGeometryElement(indices: indices, primitiveType: .line)]
-        
+
         let orbitGeom = SCNGeometry(sources: sources, elements: elements)
         orbitGeom.materials = [orbitMaterial]
 
         let orbitNode = SCNNode(geometry: orbitGeom)
         orbitNode.name = "orbit"
-        
+         */
+
         // done
         return orbitNode
     }

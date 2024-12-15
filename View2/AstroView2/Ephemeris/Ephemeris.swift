@@ -20,6 +20,7 @@ public class Ephemeris {
         
         cchars.withUnsafeBufferPointer { buffer in
             ephem_open(buffer.baseAddress, &jdBegin, &jdEnd, &jdNumber)
+            print("\(jdNumber)")
         }
     }
     

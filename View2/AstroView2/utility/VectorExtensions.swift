@@ -16,6 +16,11 @@ public extension SCNVector3 {
         return sqrt(x * x + y * y + z * z)
     }
     
+    func distance(to: SCNVector3) -> CGFloat {
+        let diff = self.subtracted(by: to)
+        return diff.vectorLen
+    }
+    
     func normalized() -> SCNVector3 {
         let len = length()
         return SCNVector3(x / len, y / len, z / len)

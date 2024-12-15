@@ -7,6 +7,7 @@
 
 import Foundation
 import SceneKit
+import SwiftSpice
 
 public class PlanetSim {
     private class EphemerisPlanet {
@@ -16,7 +17,7 @@ public class PlanetSim {
         }
         
         public func position(d: Date) -> SCNVector3 {
-            let jd = d.julian2
+            let jd = d.julian
             
             var jd_tdb: [Double] = [jd, 0.0]
             var eph_pos: [Double] = [0.0, 0.0, 0.0]
