@@ -8,6 +8,8 @@
 import SceneKit
 import QuartzCore
 import SCNMathExtensions
+import novas_swift
+import simd
 
 class SceneRendererDelegate: NSObject, SCNSceneRendererDelegate {
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
@@ -24,9 +26,9 @@ class SceneRendererDelegate: NSObject, SCNSceneRendererDelegate {
         */
     }
     
-    func moveNode(scene: SCNScene, nodeName: String, forDate: Date, moveFunc: (Date) -> SCNVector3) {
+    func moveNode(scene: SCNScene, nodeName: String, forDate: Date, moveFunc: (Date) -> simd_double3) {
         let bodyNode = scene.rootNode.childNode(withName: nodeName, recursively: true)!
-        let position = moveFunc(forDate)
+        let position = moveFunc(forDate).toSCN()
         bodyNode.position = position.scaleBy(GameViewController.oneAu)
     }
 }
@@ -37,7 +39,8 @@ class GameViewController: NSViewController {
     public static let earthMass: Double = 5.97219e24
     public static let oneAuInEarthRadii = 23454.8
     public static let oneAu: Double = oneAuInEarthRadii * earthRadius
-    
+    private static let _planetSim = buildPlanetSim()
+
     private let rendererDelegate = SceneRendererDelegate()
     
     override func viewDidLoad() {
@@ -227,70 +230,70 @@ class GameViewController: NSViewController {
         let sunNode = solarSystemBody(bodyName: "Sun",
                                       earthRadiusFraction: 109.0,
                                       textureName: "Solarsystemscope_texture_8k_sun",
-                                      computePosition: PlanetSim.sunPos,
+                                      computePosition: _planetSim.sunPos,
                                       pointerColor: NSColor.clear)
         solarSystemNode.addChildNode(sunNode)
 
         let mercuryNode = solarSystemBody(bodyName: "Mercury",
                                           earthRadiusFraction: 0.3829,
                                           textureName: "Solarsystemscope_texture_8k_mercury",
-                                          computePosition: PlanetSim.mercuryPos,
+                                          computePosition: _planetSim.mercuryPos,
                                           pointerColor: NSColor.green)
         solarSystemNode.addChildNode(mercuryNode)
 
         let venusNode = solarSystemBody(bodyName: "Venus",
                                         earthRadiusFraction: 0.9499,
                                           textureName: "2k_venus_surface",
-                                        computePosition: PlanetSim.venusPos,
+                                        computePosition: _planetSim.venusPos,
                                         pointerColor: NSColor.orange)
         solarSystemNode.addChildNode(venusNode)
         
         let earthNode = solarSystemBody(bodyName: "Earth",
                                         earthRadiusFraction: 1,
                                         textureName: "Solarsystemscope_texture_8k_earth_daymap",
-                                        computePosition: PlanetSim.earthPos,
+                                        computePosition: _planetSim.earthPos,
                                         pointerColor: NSColor.yellow)
         solarSystemNode.addChildNode(earthNode)
         
         let moonNode = solarSystemBody(bodyName: "Moon",
                                        earthRadiusFraction: 0.2725,
                                         textureName: "2k_moon",
-                                        computePosition: PlanetSim.moonPos,
+                                        computePosition: _planetSim.moonPos,
                                        pointerColor: NSColor.white)
         solarSystemNode.addChildNode(moonNode)
         
         let marsNode = solarSystemBody(bodyName: "Mars",
                                        earthRadiusFraction: 0.533,
                                         textureName: "2k_mars",
-                                       computePosition: PlanetSim.marsPos,
+                                       computePosition: _planetSim.marsPos,
                                        pointerColor: NSColor.red)
         solarSystemNode.addChildNode(marsNode)
 
         let jupiterNode = solarSystemBody(bodyName: "Jupiter",
                                        earthRadiusFraction: 11.21,
                                         textureName: "2k_jupiter",
-                                       computePosition: PlanetSim.jupiterPos,
+                                       computePosition: _planetSim.jupiterPos,
                                        pointerColor: NSColor.red)
         solarSystemNode.addChildNode(jupiterNode)
 
         let saturnNode = solarSystemBody(bodyName: "Saturn",
                                          earthRadiusFraction: 9.45,
                                         textureName: "2k_saturn",
-                                       computePosition: PlanetSim.saturnPos,
+                                       computePosition: _planetSim.saturnPos,
                                        pointerColor: NSColor.red)
         solarSystemNode.addChildNode(saturnNode)
 
         let uranusNode = solarSystemBody(bodyName: "Uranus",
                                          earthRadiusFraction: 4.01,
                                         textureName: "2k_uranus",
-                                         computePosition: PlanetSim.uranusPos,
+                                         computePosition: _planetSim.uranusPos,
                                        pointerColor: NSColor.red)
         solarSystemNode.addChildNode(uranusNode)
 
         let neptuneNode = solarSystemBody(bodyName: "Neptune",
                                           earthRadiusFraction: 3.88,
                                         textureName: "2k_neptune",
-                                       computePosition: PlanetSim.neptunePos,
+                                       computePosition: _planetSim.neptunePos,
                                        pointerColor: NSColor.red)
         solarSystemNode.addChildNode(neptuneNode)
 
@@ -336,7 +339,7 @@ class GameViewController: NSViewController {
         return axesNode
     }
     
-    private class func makeUpVectorNode(usingComputeFunction computePosition: (Date) -> SCNVector3,
+    private class func makeUpVectorNode(usingComputeFunction computePosition: (Date) -> simd_double3,
                                         withColor color: NSColor, withLength length: CGFloat) -> SCNNode {
         let posNow = computePosition(Date.now)
         
@@ -361,7 +364,7 @@ class GameViewController: NSViewController {
 
     private class func solarSystemBody(bodyName: String, earthRadiusFraction: Double,
                                        textureName: String,
-                                       computePosition: @escaping (Date) -> SCNVector3,
+                                       computePosition: @escaping (Date) -> simd_double3,
                                        pointerColor: NSColor) -> SCNNode {
         let fullRadius = earthRadiusFraction * GameViewController.earthRadius
         
@@ -373,7 +376,7 @@ class GameViewController: NSViewController {
         let mainBundle = Bundle.main
         let resourcePath = mainBundle.path(forResource: textureName, ofType: "jpg", inDirectory: "art.scnassets")
         let myImage = NSImage(byReferencingFile: resourcePath!)!
-        let nodePos = computePosition(Date.now)
+        let nodePos = computePosition(Date.now).toSCN()
         let fullPos = nodePos.scaleBy(GameViewController.oneAu)
         textureMaterial.diffuse.contents = myImage
         solarBodyNode.geometry?.materials = [textureMaterial]
@@ -471,5 +474,12 @@ class GameViewController: NSViewController {
         }
         
         return moveTo
+    }
+    
+    private class func buildPlanetSim() -> PlanetSim {
+        let mainBundle = Bundle.main
+        let resourcePath = mainBundle.path(forResource: "lnxp1900p2053", ofType: "421", inDirectory: "ephemeris")!
+        
+        return PlanetSim(ephemerisPath: resourcePath)
     }
 }
