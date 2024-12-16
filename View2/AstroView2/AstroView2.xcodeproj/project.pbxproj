@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F4FDC422D0FCDFC009B7B05 /* novas-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 1F4FDC412D0FCDFC009B7B05 /* novas-swift */; };
+		1FCB0AB52D0F773E00C3F482 /* space-pack in Frameworks */ = {isa = PBXBuildFile; productRef = 1FCB0AB42D0F773E00C3F482 /* space-pack */; };
 		1FF5B5D82CFBCF9C00B06698 /* SCNMathExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */; };
 /* End PBXBuildFile section */
 
@@ -44,19 +46,9 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		1F126ADD2CF2981600F28B62 /* Novas */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Novas;
-			sourceTree = "<group>";
-		};
 		1F126AFB2CF29A7600F28B62 /* utility */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = utility;
-			sourceTree = "<group>";
-		};
-		1FF5B4F02CF600B600B06698 /* Ephemeris */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Ephemeris;
 			sourceTree = "<group>";
 		};
 		1FF5B4FB2CF606AD00B06698 /* Resources */ = {
@@ -92,6 +84,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FCB0AB52D0F773E00C3F482 /* space-pack in Frameworks */,
+				1F4FDC422D0FCDFC009B7B05 /* novas-swift in Frameworks */,
 				1FF5B5D82CFBCF9C00B06698 /* SCNMathExtensions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -113,16 +107,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1F4FDC402D0FCDFC009B7B05 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		1FFFBCB32CE9807E00A00A51 = {
 			isa = PBXGroup;
 			children = (
-				1FF5B4F02CF600B600B06698 /* Ephemeris */,
 				1FF5B4FB2CF606AD00B06698 /* Resources */,
 				1F126AFB2CF29A7600F28B62 /* utility */,
-				1F126ADD2CF2981600F28B62 /* Novas */,
 				1FFFBCBE2CE9807E00A00A51 /* AstroView2 */,
 				1FFFBCD22CE9807F00A00A51 /* AstroView2Tests */,
 				1FFFBCDC2CE9807F00A00A51 /* AstroView2UITests */,
+				1F4FDC402D0FCDFC009B7B05 /* Frameworks */,
 				1FFFBCBD2CE9807E00A00A51 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -151,16 +151,17 @@
 			buildRules = (
 			);
 			dependencies = (
+				1FCB0AFE2D0F9E5600C3F482 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				1F126ADD2CF2981600F28B62 /* Novas */,
 				1F126AFB2CF29A7600F28B62 /* utility */,
-				1FF5B4F02CF600B600B06698 /* Ephemeris */,
 				1FFFBCBE2CE9807E00A00A51 /* AstroView2 */,
 			);
 			name = AstroView2;
 			packageProductDependencies = (
 				1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */,
+				1FCB0AB42D0F773E00C3F482 /* space-pack */,
+				1F4FDC412D0FCDFC009B7B05 /* novas-swift */,
 			);
 			productName = AstroView2;
 			productReference = 1FFFBCBC2CE9807E00A00A51 /* AstroView2.app */;
@@ -247,6 +248,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */,
+				1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../../space-pack/space-pack" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1FFFBCBD2CE9807E00A00A51 /* Products */;
@@ -309,6 +311,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1FCB0AFE2D0F9E5600C3F482 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 1FCB0AFD2D0F9E5600C3F482 /* novas-swift */;
+		};
 		1FFFBCD12CE9807F00A00A51 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1FFFBCBB2CE9807E00A00A51 /* AstroView2 */;
@@ -463,7 +469,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "jeff-org.AstroView2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Novas/src/AstroView2-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -492,7 +497,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "jeff-org.AstroView2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Novas/src/AstroView2-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -602,6 +606,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../../space-pack/space-pack" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../../space-pack/space-pack";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -614,6 +625,20 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1F4FDC412D0FCDFC009B7B05 /* novas-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../../space-pack/space-pack" */;
+			productName = "novas-swift";
+		};
+		1FCB0AB42D0F773E00C3F482 /* space-pack */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "space-pack";
+		};
+		1FCB0AFD2D0F9E5600C3F482 /* novas-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../../space-pack/space-pack" */;
+			productName = "novas-swift";
+		};
 		1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */;
