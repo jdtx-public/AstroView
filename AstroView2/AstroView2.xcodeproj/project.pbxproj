@@ -607,9 +607,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../../space-pack/space-pack" */ = {
+		1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../space-pack/space-pack" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../../../space-pack/space-pack";
+			relativePath = "../../space-pack/space-pack";
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -627,7 +627,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		1F4FDC412D0FCDFC009B7B05 /* novas-swift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../../space-pack/space-pack" */;
+			package = 1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../space-pack/space-pack" */;
 			productName = "novas-swift";
 		};
 		1FCB0AB42D0F773E00C3F482 /* space-pack */ = {
@@ -636,7 +636,7 @@
 		};
 		1FCB0AFD2D0F9E5600C3F482 /* novas-swift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../../space-pack/space-pack" */;
+			package = 1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../space-pack/space-pack" */;
 			productName = "novas-swift";
 		};
 		1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */ = {
