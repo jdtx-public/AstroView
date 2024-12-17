@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F1D9C992D0FD31F00570753 /* cspice-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 1F1D9C982D0FD31F00570753 /* cspice-swift */; };
 		1F4FDC422D0FCDFC009B7B05 /* novas-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 1F4FDC412D0FCDFC009B7B05 /* novas-swift */; };
 		1FCB0AB52D0F773E00C3F482 /* space-pack in Frameworks */ = {isa = PBXBuildFile; productRef = 1FCB0AB42D0F773E00C3F482 /* space-pack */; };
 		1FF5B5D82CFBCF9C00B06698 /* SCNMathExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */; };
@@ -51,6 +52,11 @@
 			path = utility;
 			sourceTree = "<group>";
 		};
+		1F1D9CC62D11076400570753 /* Physics */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Physics;
+			sourceTree = "<group>";
+		};
 		1FF5B4FB2CF606AD00B06698 /* Resources */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -85,6 +91,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FCB0AB52D0F773E00C3F482 /* space-pack in Frameworks */,
+				1F1D9C992D0FD31F00570753 /* cspice-swift in Frameworks */,
 				1F4FDC422D0FCDFC009B7B05 /* novas-swift in Frameworks */,
 				1FF5B5D82CFBCF9C00B06698 /* SCNMathExtensions in Frameworks */,
 			);
@@ -117,6 +124,7 @@
 		1FFFBCB32CE9807E00A00A51 = {
 			isa = PBXGroup;
 			children = (
+				1F1D9CC62D11076400570753 /* Physics */,
 				1FF5B4FB2CF606AD00B06698 /* Resources */,
 				1F126AFB2CF29A7600F28B62 /* utility */,
 				1FFFBCBE2CE9807E00A00A51 /* AstroView2 */,
@@ -151,10 +159,12 @@
 			buildRules = (
 			);
 			dependencies = (
+				1F1D9C972D0FD31900570753 /* PBXTargetDependency */,
 				1FCB0AFE2D0F9E5600C3F482 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				1F126AFB2CF29A7600F28B62 /* utility */,
+				1F1D9CC62D11076400570753 /* Physics */,
 				1FFFBCBE2CE9807E00A00A51 /* AstroView2 */,
 			);
 			name = AstroView2;
@@ -162,6 +172,7 @@
 				1FF5B5D72CFBCF9C00B06698 /* SCNMathExtensions */,
 				1FCB0AB42D0F773E00C3F482 /* space-pack */,
 				1F4FDC412D0FCDFC009B7B05 /* novas-swift */,
+				1F1D9C982D0FD31F00570753 /* cspice-swift */,
 			);
 			productName = AstroView2;
 			productReference = 1FFFBCBC2CE9807E00A00A51 /* AstroView2.app */;
@@ -248,7 +259,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1FF5B5D62CFBCF9C00B06698 /* XCRemoteSwiftPackageReference "SCNMathExtensions" */,
-				1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../../space-pack/space-pack" */,
+				1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../space-pack/space-pack" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1FFFBCBD2CE9807E00A00A51 /* Products */;
@@ -311,6 +322,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1F1D9C972D0FD31900570753 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 1F1D9C962D0FD31900570753 /* cspice-swift */;
+		};
 		1FCB0AFE2D0F9E5600C3F482 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			productRef = 1FCB0AFD2D0F9E5600C3F482 /* novas-swift */;
@@ -625,6 +640,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1F1D9C962D0FD31900570753 /* cspice-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../space-pack/space-pack" */;
+			productName = "cspice-swift";
+		};
+		1F1D9C982D0FD31F00570753 /* cspice-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../space-pack/space-pack" */;
+			productName = "cspice-swift";
+		};
 		1F4FDC412D0FCDFC009B7B05 /* novas-swift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1FCB0AB32D0F773E00C3F482 /* XCLocalSwiftPackageReference "../../space-pack/space-pack" */;
