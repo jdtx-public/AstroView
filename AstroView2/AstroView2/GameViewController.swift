@@ -42,7 +42,7 @@ class GameViewController: NSViewController {
 
     private let rendererDelegate = SceneRendererDelegate()
     
-    private let _systemModel : SystemModel = NovasSystemModel()
+    private let _systemModel : SystemModel = SpiceSystemModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()

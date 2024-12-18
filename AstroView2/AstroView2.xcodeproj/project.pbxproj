@@ -41,6 +41,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				ephemeris,
+				spice,
 			);
 			target = 1FFFBCBB2CE9807E00A00A51 /* AstroView2 */;
 		};
@@ -64,6 +65,7 @@
 			);
 			explicitFolders = (
 				ephemeris,
+				spice,
 			);
 			path = Resources;
 			sourceTree = "<group>";
