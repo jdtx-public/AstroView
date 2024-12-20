@@ -29,17 +29,12 @@ class SceneRendererDelegate: NSObject, SCNSceneRendererDelegate {
     func moveNode(scene: SCNScene, nodeName: String, forDate: Date, moveFunc: (Date) -> simd_double3) {
         let bodyNode = scene.rootNode.childNode(withName: nodeName, recursively: true)!
         let position = moveFunc(forDate).toSCN()
-        bodyNode.position = position.scaleBy(GameViewController.oneAu)
+        bodyNode.position = position.scaleBy(AstroConstants.oneAu)
     }
 }
 
 class GameViewController: NSViewController {
     
-    public static let earthRadius: Double = 1.0
-    public static let earthMass: Double = 5.97219e24
-    public static let oneAuInEarthRadii = 23454.8
-    public static let oneAu: Double = oneAuInEarthRadii * earthRadius
-
     private let rendererDelegate = SceneRendererDelegate()
     
     private let _systemModel : SystemModel = SpiceSystemModel()
@@ -66,8 +61,8 @@ class GameViewController: NSViewController {
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 1.1 * GameViewController.oneAu)
-        cameraNode.camera?.zFar = 5 * GameViewController.oneAu
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 1.1 * AstroConstants.oneAu)
+        cameraNode.camera?.zFar = 5 * AstroConstants.oneAu
         
         // create and add a light to the scene
         let lightNode = SCNNode()
@@ -176,7 +171,7 @@ class GameViewController: NSViewController {
         // we'll view from .02 AU away
         let bodyMax = bodyBounds.max
         let bodyMaxLen = bodyMax.length()
-        let extensionLen = 0.01 * GameViewController.oneAu
+        let extensionLen = 0.01 * AstroConstants.oneAu
         let newPos = bodyMax.extendBy(by: extensionLen) + sunNode.worldPosition
         
         viewSolarBody(bodyNode: sunNode, fromCameraPos: newPos)
@@ -192,7 +187,7 @@ class GameViewController: NSViewController {
         let bodyPos = bodyNode.worldPosition
         
         // view from .01 AU away
-        let extensionLen = 0.01 * GameViewController.oneAu
+        let extensionLen = 0.01 * AstroConstants.oneAu
         let cameraPos = bodyPos.extendBy(by: extensionLen)
 
         viewSolarBody(bodyNode: bodyNode, fromCameraPos: cameraPos)
@@ -204,16 +199,16 @@ class GameViewController: NSViewController {
         
         let cameraNode = scnView.pointOfView!
         let camera = cameraNode.camera!
-        camera.zNear = 0.005 * GameViewController.oneAu
-        camera.zFar = 1.5 * GameViewController.oneAu
+        camera.zNear = 0.005 * AstroConstants.oneAu
+        camera.zFar = 1.5 * AstroConstants.oneAu
         
         let oldPos = cameraNode.position
         let geometryNode = bodyNode.childNode(withName: "solarBody", recursively: true)!
         let bodyBounds = geometryNode.geometry!.boundingBox
 
-        print("targetNode pos = \(bodyNode.position) \(bodyNode.position.length() / GameViewController.oneAu)")
-        print("cameraNode oldPos = \(oldPos) \(oldPos.length() / GameViewController.oneAu)")
-        print("cameraNode newPos = \(cameraPos) len = \(cameraPos.length() / GameViewController.oneAu)")
+        print("targetNode pos = \(bodyNode.position) \(bodyNode.position.length() / AstroConstants.oneAu)")
+        print("cameraNode oldPos = \(oldPos) \(oldPos.length() / AstroConstants.oneAu)")
+        print("cameraNode newPos = \(cameraPos) len = \(cameraPos.length() / AstroConstants.oneAu)")
         print("camera z =\(cameraNode.camera?.zNear) \(cameraNode.camera?.zFar)")
         print("geometry bounds = \(bodyBounds)")
         let parentBounds = bodyNode.boundingBox
@@ -246,7 +241,7 @@ class GameViewController: NSViewController {
     }
     
     private class func sphereNode(at: SCNVector3, withColor: NSColor) -> SCNNode {
-        let sphere = SCNSphere(radius: GameViewController.oneAu / 100.0)
+        let sphere = SCNSphere(radius: AstroConstants.oneAu / 100.0)
         sphere.firstMaterial?.diffuse.contents = withColor
         sphere.firstMaterial?.specular.contents = withColor
         sphere.firstMaterial?.shininess = 0.0
@@ -259,9 +254,9 @@ class GameViewController: NSViewController {
     
     private class func makeAxesNode() -> SCNNode {
         let axesNode = SCNNode()
-        let xGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(GameViewController.oneAu, 0.0, 0.0), withColor: NSColor.cyan)
-        let yGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(0.0, GameViewController.oneAu, 0.0), withColor: NSColor.yellow)
-        let zGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(0.0, 0.0, GameViewController.oneAu), withColor: NSColor.magenta)
+        let xGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(AstroConstants.oneAu, 0.0, 0.0), withColor: NSColor.cyan)
+        let yGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(0.0, AstroConstants.oneAu, 0.0), withColor: NSColor.yellow)
+        let zGeom = cylinderNode(radius: 0.01, targetPos: SCNVector3(0.0, 0.0, AstroConstants.oneAu), withColor: NSColor.magenta)
         
         axesNode.addChildNode(xGeom)
         axesNode.addChildNode(yGeom)
@@ -271,9 +266,9 @@ class GameViewController: NSViewController {
         // draw markers
         let stepSize = 0.05
         for step in stride(from: stepSize, through: 1.0, by: stepSize) {
-            axesNode.addChildNode(sphereNode(at: SCNVector3(GameViewController.oneAu * step, 0.0, 0.0), withColor: NSColor.white))
-            axesNode.addChildNode(sphereNode(at: SCNVector3(0.0, GameViewController.oneAu * step, 0.0), withColor: NSColor.white))
-            axesNode.addChildNode(sphereNode(at: SCNVector3(0.0, 0.0, GameViewController.oneAu * step), withColor: NSColor.white))
+            axesNode.addChildNode(sphereNode(at: SCNVector3(AstroConstants.oneAu * step, 0.0, 0.0), withColor: NSColor.white))
+            axesNode.addChildNode(sphereNode(at: SCNVector3(0.0, AstroConstants.oneAu * step, 0.0), withColor: NSColor.white))
+            axesNode.addChildNode(sphereNode(at: SCNVector3(0.0, 0.0, AstroConstants.oneAu * step), withColor: NSColor.white))
         }
          */
 
@@ -308,7 +303,7 @@ class GameViewController: NSViewController {
                                        textureName: String,
                                        computePosition: @escaping (Date) -> simd_double3,
                                        pointerColor: NSColor) -> SCNNode {
-        let fullRadius = earthRadiusFraction * GameViewController.earthRadius
+        let fullRadius = earthRadiusFraction * AstroConstants.earthRadius
         
         let parentNode = SCNNode()
         
@@ -319,7 +314,7 @@ class GameViewController: NSViewController {
         let resourcePath = mainBundle.path(forResource: textureName, ofType: "jpg", inDirectory: "art.scnassets")
         let myImage = NSImage(byReferencingFile: resourcePath!)!
         let nodePos = computePosition(Date.now).toSCN()
-        let fullPos = nodePos.scaleBy(GameViewController.oneAu)
+        let fullPos = nodePos.scaleBy(AstroConstants.oneAu)
         textureMaterial.diffuse.contents = myImage
         solarBodyNode.geometry?.materials = [textureMaterial]
         solarBodyNode.name = "solarBody"
@@ -409,7 +404,7 @@ class GameViewController: NSViewController {
             let fakeTime = Date.now.addingTimeInterval((elapsedTime * 50.0))
             let planetPos = computePosition(fakeTime)
             
-            let fullPos = planetPos.scaleBy(oneAu)
+            let fullPos = planetPos.scaleBy(AstroConstants.oneAu)
             // print("\(node.name): \(planetPos)")
             
             node.position = fullPos

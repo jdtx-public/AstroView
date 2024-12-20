@@ -36,7 +36,10 @@ public class SpiceSystemModel : SystemModel {
     public func sunRelativePosition(forBody body: BodyRecord, atTime time: Date) -> simd_double3 {
         let planetBody = _solarSystem[body.name]!
 
-        return planetBody.solarPosition(atDate: time)
+        // spice gives answers in KM; we expect answers in earth radii
+        let posKm = planetBody.solarPosition(atDate: time)
+        
+        return posKm.kmToEarthRadii
     }
     
     private class func createBodyRecords() -> [BodyRecord] {
