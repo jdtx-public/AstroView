@@ -58,6 +58,11 @@
 			path = Physics;
 			sourceTree = "<group>";
 		};
+		1F1D9D742D16679D00570753 /* Geometry */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Geometry;
+			sourceTree = "<group>";
+		};
 		1FF5B4FB2CF606AD00B06698 /* Resources */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -126,6 +131,7 @@
 		1FFFBCB32CE9807E00A00A51 = {
 			isa = PBXGroup;
 			children = (
+				1F1D9D742D16679D00570753 /* Geometry */,
 				1F1D9CC62D11076400570753 /* Physics */,
 				1FF5B4FB2CF606AD00B06698 /* Resources */,
 				1F126AFB2CF29A7600F28B62 /* utility */,
@@ -167,6 +173,7 @@
 			fileSystemSynchronizedGroups = (
 				1F126AFB2CF29A7600F28B62 /* utility */,
 				1F1D9CC62D11076400570753 /* Physics */,
+				1F1D9D742D16679D00570753 /* Geometry */,
 				1FFFBCBE2CE9807E00A00A51 /* AstroView2 */,
 			);
 			name = AstroView2;
