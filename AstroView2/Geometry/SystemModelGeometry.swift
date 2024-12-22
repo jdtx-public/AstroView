@@ -61,7 +61,7 @@ public class SystemModelGeometry: SpaceGeometry {
         let resourcePath = mainBundle.path(forResource: textureName, ofType: "jpg", inDirectory: "art.scnassets")
         let myImage = NSImage(byReferencingFile: resourcePath!)!
         let nodePos = computePosition(Date.now).toSCN()
-        let fullPos = nodePos.scaleBy(AstroConstants.oneAu)
+        let fullPos = nodePos
         textureMaterial.diffuse.contents = myImage
         solarBodyNode.geometry?.materials = [textureMaterial]
         solarBodyNode.name = "solarBody"
@@ -73,7 +73,7 @@ public class SystemModelGeometry: SpaceGeometry {
             moveWithBodyNode.addChildNode(cylinderNode)
             
             // add the up vector
-            let upvecNode = makeUpVectorNode(usingComputeFunction: computePosition, withColor: pointerColor, withLength: fullRadius * 10.0)
+            let upvecNode = makeUpVectorNode(usingComputeFunction: computePosition, withColor: NSColor.green, withLength: fullRadius * 1000.0)
             upvecNode.name = "upVector"
             moveWithBodyNode.addChildNode(upvecNode)
             
@@ -201,7 +201,7 @@ public class SystemModelGeometry: SpaceGeometry {
         let stride = (1.0 / CGFloat(numSteps)) * _secondsInYear
         let dates = indices.map { Date.now.advanced(by: Double($0) * stride) }
         let rawPositions = dates.map { computePosition($0) }
-        let positions = rawPositions.map { $0.toSCN().scaleBy(AstroConstants.oneAu) }
+        let positions = rawPositions.map { $0.toSCN() }
         
         let orbitNode = SCNNode()
         orbitNode.name = "orbit"
