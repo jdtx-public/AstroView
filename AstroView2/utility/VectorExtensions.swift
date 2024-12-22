@@ -25,6 +25,11 @@ public extension SCNVector3 {
         return normalized()
     }
     
+    func distance(to: SCNVector3) -> CGFloat {
+        let diff = self.subtracted(by: to)
+        return diff.vectorLen
+    }
+    
     func scaleBy(_ factor: CGFloat) -> SCNVector3 {
         return SCNVector3(x * factor, y * factor, z * factor)
     }
