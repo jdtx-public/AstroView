@@ -196,27 +196,19 @@ public class SystemModelGeometry: SpaceGeometry {
         orbitMaterial.diffuse.contents = color
 
         // build the geometry
-        let numSteps: Int = 30
-        let stride = (1.0 / (CGFloat(numSteps) * 2.0)) * _secondsInYear
+        let rawPositionsOpposites = orbitNodeArrayMapOpposite(numSteps: 30, computePosition: computePosition)
+        let rawPositionsAllMapped = orbitNodeArrayAllMapped(numSteps: 60, computePosition: computePosition)
         
-        var rawPositions: [simd_double3] = [simd_double3](repeating: simd_double3.zero, count: numSteps * 2)
-        
-        for i in 0..<numSteps {
-            let dateHere = Date.now.advanced(by: Double(i) * stride)
-            rawPositions[i] = computePosition(dateHere)
-            rawPositions[i + numSteps] = rawPositions[i] * -1.0
-            
-            print("\(dateHere): \(rawPositions[i]) \(rawPositions[i + numSteps])")
-        }
-        
-        let positions = Array(rawPositions.map { $0.toSCN() })
+        let positions = Array(rawPositionsAllMapped.map { $0.toSCN() })
         
         // remember that the positions all need to be relative to now because
         // the planet's position is the parent node position
         // let positions2 = positions.map { $0.subtracted(by: positions[0]) }
         let positions2 = positions
 
-        let positionPairs = Array(positions2.adjacentPairs())
+        var positionPairs = [(SCNVector3, SCNVector3)](repeating: (SCNVector3.zero, SCNVector3.zero), count: positions.count)
+        positionPairs.replaceSubrange(0..<positions.count, with: positions2.adjacentPairs())
+        positionPairs[positionPairs.count - 1] = (positionPairs[positionPairs.count - 2].1, positionPairs[0].0)
 
         let orbitNode = SCNNode()
         orbitNode.name = "orbit"
@@ -250,6 +242,33 @@ public class SystemModelGeometry: SpaceGeometry {
 
         // done
         return orbitNode
+    }
+    
+    private class func orbitNodeArrayAllMapped(numSteps: Int, computePosition: @escaping (Date) -> simd_double3) -> [simd_double3] {
+        let stride = (1.0 / (CGFloat(numSteps))) * _secondsInYear
+
+        var rawPositions: [simd_double3] = [simd_double3](repeating: simd_double3.zero, count: numSteps)
+        
+        for i in 0..<numSteps {
+            let dateHere = Date.now.advanced(by: Double(i) * stride)
+            rawPositions[i] = computePosition(dateHere)
+        }
+        
+        return rawPositions
+    }
+
+    private class func orbitNodeArrayMapOpposite(numSteps: Int, computePosition: @escaping (Date) -> simd_double3) -> [simd_double3] {
+        let stride = ((1.0 / (CGFloat(numSteps))) * _secondsInYear) / 2.0
+        
+        var rawPositions: [simd_double3] = [simd_double3](repeating: simd_double3.zero, count: numSteps * 2)
+        
+        for i in 0..<numSteps {
+            let dateHere = Date.now.advanced(by: Double(i) * stride)
+            rawPositions[i] = computePosition(dateHere)
+            rawPositions[i + numSteps] = rawPositions[i] * -1.0
+        }
+        
+        return rawPositions
     }
 
     /*
