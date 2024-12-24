@@ -17,9 +17,14 @@ public class SpiceSystemModel : SystemModel {
     public init() {
         let mainBundle = Bundle.main
         
-        let bsps = [ "de432s", "de438", "de440" ]
+        let kernelResources = [ "de432s.bsp", "de438.bsp", "de440.bsp", "latest_leapseconds.tls" ]
         
-        let resourcePaths : [String] = bsps.map { mainBundle.path(forResource: $0, ofType: "bsp", inDirectory: "spice")! }
+        let kernelNamePairs = kernelResources.map { (name: String) -> (String, String) in
+            let nameParts = name.split(separator: ".")
+            return (String(nameParts[0]), String(nameParts[1]))
+        }
+        
+        let resourcePaths : [String] = kernelNamePairs.map { mainBundle.path(forResource: $0.0, ofType: $0.1, inDirectory: "spice")! }
 
         var localKernels : [Kernel] = resourcePaths.map { Kernel(withFilePath: $0) }
         
