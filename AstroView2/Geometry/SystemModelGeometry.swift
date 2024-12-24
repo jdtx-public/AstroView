@@ -196,15 +196,20 @@ public class SystemModelGeometry: SpaceGeometry {
         orbitMaterial.diffuse.contents = color
 
         // build the geometry
-        let numSteps: Int32 = 30
-        let indices: [Int32] = Array(Int32(0)...numSteps)
-        let stride = (1.0 / CGFloat(numSteps)) * _secondsInYear
-        let dates = indices.map { Date.now.advanced(by: Double($0) * stride) }
-        let rawPositions = dates.map { computePosition($0) }
-        let positions = rawPositions.map { $0.toSCN() }
+        let numSteps: Int = 30
+        let stride = (1.0 / (CGFloat(numSteps) * 2.0)) * _secondsInYear
         
-        let orbitNode = SCNNode()
-        orbitNode.name = "orbit"
+        var rawPositions: [simd_double3] = [simd_double3](repeating: simd_double3.zero, count: numSteps * 2)
+        
+        for i in 0..<numSteps {
+            let dateHere = Date.now.advanced(by: Double(i) * stride)
+            rawPositions[i] = computePosition(dateHere)
+            rawPositions[i + numSteps] = rawPositions[i] * -1.0
+            
+            print("\(dateHere): \(rawPositions[i]) \(rawPositions[i + numSteps])")
+        }
+        
+        let positions = Array(rawPositions.map { $0.toSCN() })
         
         // remember that the positions all need to be relative to now because
         // the planet's position is the parent node position
@@ -212,6 +217,10 @@ public class SystemModelGeometry: SpaceGeometry {
         let positions2 = positions
 
         let positionPairs = Array(positions2.adjacentPairs())
+
+        let orbitNode = SCNNode()
+        orbitNode.name = "orbit"
+        
         let lineGeoms = positionPairs.map { lineFrom(vector: $0.0, toVector: $0.1) }
         for oneGeom in lineGeoms {
             let oneNode = SCNNode(geometry: oneGeom)
@@ -219,9 +228,9 @@ public class SystemModelGeometry: SpaceGeometry {
             orbitNode.addChildNode(oneNode)
         }
         
-        /*
-        let vectorLens = positionPairs.map { $0.0.distance(to: $0.1) }
+        let vectorLens = Array(positionPairs.map { $0.0.distance(to: $0.1) })
 
+        /*
         let index01: [Int32] = [0, 1]
         let pairsSource = positionPairs.map { SCNGeometrySource(vertices: [ $0.0, $0.1 ]) }
         let elementSource = positionPairs.map { _ in SCNGeometryElement(indices: index01, primitiveType: .line) }
@@ -229,15 +238,15 @@ public class SystemModelGeometry: SpaceGeometry {
         let sources = Array(pairsSource)
         let elements = Array(elementSource)
 
-        let sources = [SCNGeometrySource(vertices: positions2)]
-        let elements = [SCNGeometryElement(indices: indices, primitiveType: .line)]
+        // let geomSource = [SCNGeometrySource(vertices: positions2)]
+        // let geomElem = [SCNGeometryElement(indices: indices, primitiveType: .line)]
 
         let orbitGeom = SCNGeometry(sources: sources, elements: elements)
         orbitGeom.materials = [orbitMaterial]
 
         let orbitNode = SCNNode(geometry: orbitGeom)
         orbitNode.name = "orbit"
-         */
+        */
 
         // done
         return orbitNode
