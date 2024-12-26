@@ -17,11 +17,16 @@ public class SpiceSystemModel : SystemModel {
     public init() {
         let mainBundle = Bundle.main
         
-        let bsps = [ "de432s", "de438", "de440" ]
+        let kernelResources = [ "de432s.bsp", "de438.bsp", "de440.bsp", "latest_leapseconds.tls" ]
         
-        let resourcePaths : [String] = bsps.map { mainBundle.path(forResource: $0, ofType: "bsp", inDirectory: "spice")! }
+        let kernelNamePairs = kernelResources.map { (name: String) -> (String, String) in
+            let nameParts = name.split(separator: ".")
+            return (String(nameParts[0]), String(nameParts[1]))
+        }
+        
+        let resourcePaths : [String] = kernelNamePairs.map { mainBundle.path(forResource: $0.0, ofType: $0.1, inDirectory: "spice")! }
 
-        var localKernels : [Kernel] = resourcePaths.map { Kernel(withFilePath: $0) }
+        let localKernels : [Kernel] = resourcePaths.map { Kernel(withFilePath: $0) }
         
         _kernels = localKernels
         _solarSystem = SolarSystem()
@@ -44,10 +49,10 @@ public class SpiceSystemModel : SystemModel {
     
     private class func createBodyRecords() -> [BodyRecord] {
         let records : [BodyRecord] = [
-            BodyRecord(name: "Sun", path: ":", earthRadiusFraction: 109, texturePath: "Solarsystemscope_texture_8k_sun"),
-            BodyRecord(name: "Mercury", path: ":Sun:", earthRadiusFraction: 0.3829, texturePath: "Solarsystemscope_texture_8k_mercury"),
-            BodyRecord(name: "Venus", path: ":Sun:", earthRadiusFraction: 0.3829, texturePath: "2k_venus_surface"),
-            BodyRecord(name: "Earth", path: ":Sun:", earthRadiusFraction: 1, texturePath: "Solarsystemscope_texture_8k_earth_daymap"),
+            BodyRecord(name: "Sun", path: ":", earthRadiusFraction: 109, texturePath: "Solarsystemscope_texture_8k_sun", orbitalPeriodEarthYears: 0.0),
+            BodyRecord(name: "Mercury", path: ":Sun:", earthRadiusFraction: 0.3829, texturePath: "Solarsystemscope_texture_8k_mercury", orbitalPeriodEarthYears: 0.2408467),
+            BodyRecord(name: "Venus", path: ":Sun:", earthRadiusFraction: 0.3829, texturePath: "2k_venus_surface", orbitalPeriodEarthYears: 0.61519726),
+            BodyRecord(name: "Earth", path: ":Sun:", earthRadiusFraction: 1, texturePath: "Solarsystemscope_texture_8k_earth_daymap", orbitalPeriodEarthYears: 1.0000174),
             /*
             BodyRecord(name: "Mars", path: ":Sun:", earthRadiusFraction: 0.533, texturePath: "2k_mars"),
             BodyRecord(name: "Jupiter", path: ":Sun:", earthRadiusFraction: 11.21, texturePath: "2k_jupiter"),
