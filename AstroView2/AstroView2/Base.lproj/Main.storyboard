@@ -647,6 +647,30 @@
                                                 <action selector="handleViewMars:" target="Ady-hI-5gd" id="q4T-0C-8v2"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Jupiter" id="Jnw-Ey-9zi">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="handleViewJupiter:" target="Ady-hI-5gd" id="jzi-CH-dvP"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Saturn" id="XL3-cS-fbu">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="handleViewSaturn:" target="Ady-hI-5gd" id="HsD-J7-NOf"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Uranus" id="Fyz-Zq-9ie">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="handleViewUranus:" target="Ady-hI-5gd" id="xei-IK-qjW"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Neptune" id="0VB-X4-PMc">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="handleViewNeptune:" target="Ady-hI-5gd" id="0nq-OP-XR5"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="cmk-QS-mBq"/>
                                         <menuItem title="Show Sidebar" keyEquivalent="s" id="kIP-vf-haE">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
