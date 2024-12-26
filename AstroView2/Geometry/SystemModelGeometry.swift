@@ -31,6 +31,7 @@ public class SystemModelGeometry: SpaceGeometry {
         
         try _systemModel.forEachBody { body in
             let childNode = SystemModelGeometry.solarSystemBody(bodyName: body.name, earthRadiusFraction: body.earthRadiusFraction, textureName: body.texturePath,
+                                                                computeDate: body.computeFractionalYearDate,
                                                                 computePosition: {d in self._systemModel.sunRelativePosition(forBody: body, atTime: d)},
                                                                 pointerColor: NSColor.red)
             targetNode.addChildNode(childNode)
@@ -43,6 +44,7 @@ public class SystemModelGeometry: SpaceGeometry {
     
     private class func solarSystemBody(bodyName: String, earthRadiusFraction: Double,
                                        textureName: String,
+                                       computeDate: @escaping (Date, Double) -> Date,
                                        computePosition: @escaping (Date) -> simd_double3,
                                        pointerColor: NSColor) -> SCNNode {
         let fullRadius = earthRadiusFraction * AstroConstants.earthRadius
@@ -78,7 +80,7 @@ public class SystemModelGeometry: SpaceGeometry {
             moveWithBodyNode.addChildNode(upvecNode)
             
             // add the orbits too
-            let orbitNode = makeOrbitNode(computePosition: computePosition, withColor: NSColor.yellow)
+            let orbitNode = makeOrbitNode(computeDate: computeDate, computePosition: computePosition, withColor: NSColor.yellow)
             orbitNode.name = "orbitPath"
             fixedNode.addChildNode(orbitNode)
         }
@@ -191,13 +193,12 @@ public class SystemModelGeometry: SpaceGeometry {
         return cylinderNode
     }
 
-    private class func makeOrbitNode(computePosition: @escaping (Date) -> simd_double3, withColor color: NSColor) -> SCNNode {
+    private class func makeOrbitNode(computeDate: @escaping (Date, Double) -> Date, computePosition: @escaping (Date) -> simd_double3, withColor color: NSColor) -> SCNNode {
         let orbitMaterial = SCNMaterial()
         orbitMaterial.diffuse.contents = color
 
         // build the geometry
-        let rawPositionsOpposites = orbitNodeArrayMapOpposite(numSteps: 30, computePosition: computePosition)
-        let rawPositionsAllMapped = orbitNodeArrayAllMapped(numSteps: 60, computePosition: computePosition)
+        let rawPositionsAllMapped = orbitNodeArrayAllMapped(numSteps: 60, computeDate: computeDate, computePosition: computePosition)
         
         let positions = Array(rawPositionsAllMapped.map { $0.toSCN() })
         
@@ -220,97 +221,18 @@ public class SystemModelGeometry: SpaceGeometry {
             orbitNode.addChildNode(oneNode)
         }
         
-        let vectorLens = Array(positionPairs.map { $0.0.distance(to: $0.1) })
-
-        /*
-        let index01: [Int32] = [0, 1]
-        let pairsSource = positionPairs.map { SCNGeometrySource(vertices: [ $0.0, $0.1 ]) }
-        let elementSource = positionPairs.map { _ in SCNGeometryElement(indices: index01, primitiveType: .line) }
-        
-        let sources = Array(pairsSource)
-        let elements = Array(elementSource)
-
-        // let geomSource = [SCNGeometrySource(vertices: positions2)]
-        // let geomElem = [SCNGeometryElement(indices: indices, primitiveType: .line)]
-
-        let orbitGeom = SCNGeometry(sources: sources, elements: elements)
-        orbitGeom.materials = [orbitMaterial]
-
-        let orbitNode = SCNNode(geometry: orbitGeom)
-        orbitNode.name = "orbit"
-        */
-
         // done
         return orbitNode
     }
     
-    private class func orbitNodeArrayAllMapped(numSteps: Int, computePosition: @escaping (Date) -> simd_double3) -> [simd_double3] {
-        let stride = (1.0 / (CGFloat(numSteps))) * _secondsInYear
+    private class func orbitNodeArrayAllMapped(numSteps: Int, computeDate: @escaping (Date, Double) -> Date, computePosition: @escaping (Date) -> simd_double3) -> [simd_double3] {
+        let stepSize = (1.0 / (CGFloat(numSteps - 1)))
 
-        var rawPositions: [simd_double3] = [simd_double3](repeating: simd_double3.zero, count: numSteps)
-        
-        for i in 0..<numSteps {
-            let dateHere = Date.now.advanced(by: Double(i) * stride)
-            rawPositions[i] = computePosition(dateHere)
-        }
+        let steps = Array(stride(from: 0.0, through: 1.0, by: stepSize))
+        let startDate = Date.now
+        let dates = steps.map { computeDate(startDate, $0) }
+        let rawPositions: [simd_double3] = Array(dates.map(computePosition))
         
         return rawPositions
     }
-
-    private class func orbitNodeArrayMapOpposite(numSteps: Int, computePosition: @escaping (Date) -> simd_double3) -> [simd_double3] {
-        let stride = ((1.0 / (CGFloat(numSteps))) * _secondsInYear) / 2.0
-        
-        var rawPositions: [simd_double3] = [simd_double3](repeating: simd_double3.zero, count: numSteps * 2)
-        
-        for i in 0..<numSteps {
-            let dateHere = Date.now.advanced(by: Double(i) * stride)
-            rawPositions[i] = computePosition(dateHere)
-            rawPositions[i + numSteps] = rawPositions[i] * -1.0
-        }
-        
-        return rawPositions
-    }
-
-    /*
-    private class func makeOrbitPathNode(usingComputeFunction computePosition: (Date) -> simd_double3,
-                                        withColor color: NSColor) -> SCNNode {
-        let lineMaterial = SCNMaterial()
-        lineMaterial.diffuse.contents = color
-
-        let orbitNode = SCNNode()
-        
-        let pathSegments = 4
-        
-        var curDate = Date.now
-
-        var curPos = computePosition(curDate)
-        
-        for _ in 0...pathSegments {
-            let nextDate = Calendar.current.date(byAdding: .month, value: 3, to: curDate)!
-            let nextPos = computePosition(nextDate)
-            
-            let lineDiff = nextPos - curPos
-            
-            let curPosScn = curPos.toSCN().scaleBy(AstroConstants.oneAu)
-            let nextPosScn = nextPos.toSCN().scaleBy(AstroConstants.oneAu)
-            let linePosScn = lineDiff.toSCN().scaleBy(AstroConstants.oneAu)
-            
-            let cylinderNode = cylinderNode(radius: 3.0, targetPos: linePosScn, withColor: color)
-            cylinderNode.position = curPosScn
-
-            /*
-            let lineGeom = lineFrom(vector: curPosScn, toVector: nextPosScn)
-            let lineNode = SCNNode(geometry: lineGeom)
-            lineGeom.materials = [lineMaterial]
-            */
-
-            curDate = nextDate
-            curPos = nextPos
-            
-            orbitNode.addChildNode(cylinderNode)
-        }
-        
-        return orbitNode
-    }
-    */
 }
