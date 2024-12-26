@@ -76,8 +76,8 @@ class GameViewController: NSViewController {
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 1.1 * AstroConstants.oneAu)
-        cameraNode.camera?.zFar = 5 * AstroConstants.oneAu
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 0.4 * AstroConstants.oneAu)
+        cameraNode.camera?.zFar = 60 * AstroConstants.oneAu
         
         // create and add a light to the scene
         let lightNode = SCNNode()
@@ -172,6 +172,22 @@ class GameViewController: NSViewController {
         viewByName(bodyName: "Mars")
     }
     
+    @IBAction func handleViewJupiter(_ sender: Any) {
+        viewByName(bodyName: "Jupiter")
+    }
+    
+    @IBAction func handleViewSaturn(_ sender: Any) {
+        viewByName(bodyName: "Saturn")
+    }
+    
+    @IBAction func handleViewUranus(_ sender: Any) {
+        viewByName(bodyName: "Uranus")
+    }
+    
+    @IBAction func handleViewNeptune(_ sender: Any) {
+        viewByName(bodyName: "Neptune")
+    }
+    
     @IBAction func handleViewSun(_ sender: Any) {
         // the sun is obviously at distance 0 from the center
         // of the system, so viewByName won't work
@@ -185,7 +201,6 @@ class GameViewController: NSViewController {
         
         // we'll view from .02 AU away
         let bodyMax = bodyBounds.max
-        let bodyMaxLen = bodyMax.length()
         let extensionLen = 0.01 * AstroConstants.oneAu
         let newPos = bodyMax.extendBy(by: extensionLen) + sunNode.worldPosition
         
@@ -215,7 +230,7 @@ class GameViewController: NSViewController {
         let cameraNode = scnView.pointOfView!
         let camera = cameraNode.camera!
         camera.zNear = 0.005 * AstroConstants.oneAu
-        camera.zFar = 1.5 * AstroConstants.oneAu
+        camera.zFar = 60 * AstroConstants.oneAu
         
         let oldPos = cameraNode.position
         let geometryNode = bodyNode.childNode(withName: "solarBody", recursively: true)!
