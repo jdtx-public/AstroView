@@ -13,3 +13,18 @@ public protocol SystemModel {
     
     func sunRelativePosition(forBody body: BodyRecord, atTime time: Date) -> simd_double3
 }
+
+public extension SystemModel {
+    func parentRelativePosition(forBody body: BodyRecord, atTime time: Date) -> simd_double3 {
+        let parentBody = bodyCatalog.parentBody(for: body)
+        
+        if (parentBody == nil) {
+            return simd_double3.zero
+        }
+        
+        let parentPosition = sunRelativePosition(forBody: parentBody!, atTime: time)
+        let thisPosition = sunRelativePosition(forBody: body, atTime: time)
+        
+        return thisPosition - parentPosition
+    }
+}

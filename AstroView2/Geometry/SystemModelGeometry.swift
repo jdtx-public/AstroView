@@ -47,8 +47,9 @@ public class SystemModelGeometry: SpaceGeometry {
             
             let childNode = SystemModelGeometry.solarSystemBody(forBodyRecord: body,
                                                                 computeDate: body.computeFractionalYearDate,
-                                                                computePosition: {d in self._systemModel.sunRelativePosition(forBody: body, atTime: d)},
+                                                                computePosition: {d in self._systemModel.parentRelativePosition(forBody: body, atTime: d)},
                                                                 pointerColor: NSColor.red)
+            
             targetNode.addChildNode(childNode)
         }
     }
