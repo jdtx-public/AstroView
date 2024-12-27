@@ -9,7 +9,7 @@ import Foundation
 import simd
 
 public protocol SystemModel {
-    func forEachBody(_ body: (BodyRecord) throws -> Void) throws
+    var bodyCatalog : BodyCatalog { get }
     
     func sunRelativePosition(forBody body: BodyRecord, atTime time: Date) -> simd_double3
 }
