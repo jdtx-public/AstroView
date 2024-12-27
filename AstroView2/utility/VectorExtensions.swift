@@ -75,4 +75,10 @@ public extension SCNVector3 {
                              z: axis.z * sinAngle,
                              w: cos(halfAngle))
     }
+    
+    func relativeTo(_ other: SCNVector3) -> SCNVector3 {
+        var relative = self
+        relative.subtract(other)
+        return relative
+    }
 }

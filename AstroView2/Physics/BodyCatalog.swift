@@ -36,8 +36,18 @@ public class BodyCatalog {
         return nil
     }
     
+    func forEachChild(of body: BodyRecord, _ callback: (BodyRecord) throws -> Void) throws {
+        try _bodies
+            .filter { $0.value.path == body.name }
+            .forEach { try callback($0.value) }
+    }
+    
     func forEachBody(_ body: (BodyRecord) throws -> Void) throws {
         try _bodies.forEach { try body($0.value) }
+    }
+    
+    public var sun : BodyRecord {
+        return _bodies["Sun"]!
     }
 
     private class func createBodyRecords() -> [BodyRecord] {

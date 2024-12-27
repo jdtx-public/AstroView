@@ -28,15 +28,36 @@ public class SystemModelGeometry: SpaceGeometry {
     }
     
     private func addSolarBodies(targetNode: SCNNode) throws {
-        // add bodies in particular order so that we know that their parents exist
-        try addBodies(targetNode: targetNode, ofType: .Sun)
-        try addBodies(targetNode: targetNode, ofType: .Planet)
-        try addBodies(targetNode: targetNode, ofType: .NaturalSatellite)
+        try addBody(bodyRecord: _systemModel.bodyCatalog.sun, targetNode: targetNode)
 
         targetNode.position = SCNVector3(0.0, 0.0, 1000.0)
         
         // for debugging
         targetNode.addChildNode(SystemModelGeometry.makeAxesNode())
+    }
+    
+    private func addBody(bodyRecord: BodyRecord, targetNode: SCNNode) throws {
+        let systemNode = SCNNode()
+        systemNode.name = bodyRecord.name
+
+        let curDate = Date.now
+        let fullPos = _systemModel.parentRelativePosition(forBody: bodyRecord, atTime: curDate).toSCN()
+        let mtx = SCNMatrix4MakeTranslation(fullPos.x, fullPos.y, fullPos.z)
+        systemNode.setWorldTransform(mtx)
+      
+        let bodyNode = SystemModelGeometry.solarSystemBody(forBodyRecord: bodyRecord,
+                                                            computeDate: bodyRecord.computeFractionalYearDate,
+                                                            computePosition: {d in self._systemModel.parentRelativePosition(forBody: bodyRecord, atTime: d)},
+                                                            pointerColor: NSColor.red)
+        systemNode.addChildNode(bodyNode)
+        
+        let childBodyNode = SCNNode()
+        try _systemModel.bodyCatalog.forEachChild(of: bodyRecord) { childBody in
+            try addBody(bodyRecord: childBody, targetNode: childBodyNode)
+        }
+        systemNode.addChildNode(childBodyNode)
+        
+        targetNode.addChildNode(systemNode)
     }
     
     private func addBodies(targetNode: SCNNode, ofType: BodyType) throws {
@@ -99,10 +120,6 @@ public class SystemModelGeometry: SpaceGeometry {
         }
         
         moveWithBodyNode.addChildNode(solarBodyNode)
-        // parentNode.position = fullPos
-        let mtx = SCNMatrix4MakeTranslation(fullPos.x, fullPos.y, fullPos.z)
-        moveWithBodyNode.setWorldTransform(mtx)
-        moveWithBodyNode.name = body.name
 
         let parentNode = SCNNode()
         parentNode.addChildNode(moveWithBodyNode)
@@ -209,11 +226,13 @@ public class SystemModelGeometry: SpaceGeometry {
     private class func makeOrbitNode(computeDate: @escaping (Date, Double) -> Date, computePosition: @escaping (Date) -> simd_double3, withColor color: NSColor) -> SCNNode {
         let orbitMaterial = SCNMaterial()
         orbitMaterial.diffuse.contents = color
+        
+        let basePosition = computePosition(Date.now).toSCN()
 
         // build the geometry
         let rawPositionsAllMapped = orbitNodeArrayAllMapped(numSteps: 60, computeDate: computeDate, computePosition: computePosition)
         
-        let positions = Array(rawPositionsAllMapped.map { $0.toSCN() })
+        let positions = Array(rawPositionsAllMapped.map { $0.toSCN().relativeTo(basePosition) })
         
         // remember that the positions all need to be relative to now because
         // the planet's position is the parent node position
