@@ -7,21 +7,29 @@
 
 import Foundation
 
+public enum BodyType {
+    case Sun
+    case Planet
+    case NaturalSatellite
+}
+
 public class BodyRecord {
     public let name: String
     public let path: String
     public let earthRadiusFraction: Double
     public let texturePath: String
     public let orbitalPeriodEarthYears: Double
+    public let bodyType: BodyType
     
-    public init(name: String, path: String, earthRadiusFraction: Double, texturePath: String, orbitalPeriodEarthYears: Double) {
+    public init(name: String, path: String, earthRadiusFraction: Double, texturePath: String,
+                orbitalPeriodEarthYears: Double, bodyType: BodyType = .Planet) {
         self.name = name
         self.path = path
         self.earthRadiusFraction = earthRadiusFraction
         self.texturePath = texturePath
         self.orbitalPeriodEarthYears = orbitalPeriodEarthYears
+        self.bodyType = bodyType
     }
-    
 }
 
 public extension BodyRecord {
