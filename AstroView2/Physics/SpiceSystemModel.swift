@@ -20,7 +20,7 @@ public class SpiceSystemModel : SystemModel {
         
         _bodies = BodyCatalog()
         
-        let kernelResources = [ "de432s.bsp", "de438.bsp", "de440.bsp", "latest_leapseconds.tls" ]
+        let kernelResources = [ "de432s.bsp", "de438.bsp", "de440.bsp", "latest_leapseconds.tls", "jup344.bsp", "jup365.bsp" ]
         
         let kernelNamePairs = kernelResources.map { (name: String) -> (String, String) in
             let nameParts = name.split(separator: ".")
