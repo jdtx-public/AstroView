@@ -107,14 +107,15 @@ public class SystemModelGeometry: SpaceGeometry {
             moveWithBodyNode.addChildNode(cylinderNode)
 
             // add the up vector
-            let upvecNode = makeUpVectorNode(usingComputeFunction: computePosition, withColor: NSColor.green, withLength: fullRadius * 1000.0)
+            let upvecNode = makeUpVectorNode(forBodyRecord: body, usingComputeFunction: computePosition, withColor: NSColor.green, withLength: fullRadius * 1000.0)
             upvecNode.name = "upVector"
             moveWithBodyNode.addChildNode(upvecNode)
         }
         
-        if (body.bodyType == .Planet) {
-            // add the orbits for planets
-            let orbitNode = makeOrbitNode(computeDate: computeDate, computePosition: computePosition, withColor: NSColor.yellow)
+        if (body.bodyType != .Sun) {
+            // add the orbits for planets and moons
+            let orbitColor = body.bodyType == .Planet ? NSColor.yellow : NSColor.white
+            let orbitNode = makeOrbitNode(computeDate: computeDate, computePosition: computePosition, withColor: orbitColor)
             orbitNode.name = "orbitPath"
             fixedNode.addChildNode(orbitNode)
         }
@@ -200,23 +201,27 @@ public class SystemModelGeometry: SpaceGeometry {
         
     }
     
-    private class func makeUpVectorNode(usingComputeFunction computePosition: (Date) -> simd_double3,
+    private class func makeUpVectorNode(forBodyRecord body: BodyRecord,
+                                        usingComputeFunction computePosition: (Date) -> simd_double3,
                                         withColor color: NSColor, withLength length: CGFloat) -> SCNNode {
         let posNow = computePosition(Date.now)
         
-        let threeMonthsFromNow = Calendar.current.date(byAdding: .month, value: 3, to: Date.now)!
-        let sixMonthsFromNow = Calendar.current.date(byAdding: .month, value: 6, to: Date.now)!
-        let pos3Months = computePosition(threeMonthsFromNow)
-        let pos6Months = computePosition(sixMonthsFromNow)
+        // find its position now, 1/4 of an orbit from now, and 1/2 of an orbit from now
+        let oneQuarterSeconds = (body.orbitalPeriodEarthYears / 4) * AstroConstants.secondsPerYear
+
+        let oneQuarterOrbitFromNow = Calendar.current.date(byAdding: .second, value: Int(oneQuarterSeconds), to: Date.now)!
+        let oneHalfOrbitFromNow = Calendar.current.date(byAdding: .second, value: Int(oneQuarterSeconds), to: oneQuarterOrbitFromNow)!
+        let posQuarterOrbit = computePosition(oneQuarterOrbitFromNow)
+        let posHalfOrbit = computePosition(oneHalfOrbitFromNow)
         
-        let v3 = SCNVector3(pos3Months.x - posNow.x, pos3Months.y - posNow.y, pos3Months.z - posNow.z)
-        let v6 = SCNVector3(pos6Months.x - posNow.x, pos6Months.y - posNow.y, pos6Months.z - posNow.z)
+        let v3 = SCNVector3(posQuarterOrbit.x - posNow.x, posQuarterOrbit.y - posNow.y, posQuarterOrbit.z - posNow.z)
+        let v6 = SCNVector3(posHalfOrbit.x - posNow.x, posHalfOrbit.y - posNow.y, posHalfOrbit.z - posNow.z)
         
         let upVec = v3.crossProduct(v6)
         
         let longUpVec = upVec.extendTo(to: length)
         
-        print("calculated up vector: \(longUpVec)")
+        print("calculated up vector for \(body.name): \(longUpVec)")
         
         let cylinderNode = cylinderNode(radius: 1.0, targetPos: longUpVec, withColor: color)
 
