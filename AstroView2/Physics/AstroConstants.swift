@@ -17,4 +17,6 @@ public class AstroConstants {
     public static let oneAuInKm = 149597870.691
     
     public static let oneEarthRadiusInKm = oneAuInKm / oneAuInEarthRadii
+    
+    public static let secondsPerYear: Double = 365.25 * 24 * 60 * 60
 }
