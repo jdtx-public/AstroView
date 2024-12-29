@@ -20,15 +20,18 @@ public class BodyRecord {
     public let texturePath: String
     public let orbitalPeriodEarthYears: Double
     public let bodyType: BodyType
+    public let axialTiltDegrees: Double
     
     public init(name: String, path: String, earthRadiusFraction: Double, texturePath: String,
-                orbitalPeriodEarthYears: Double, bodyType: BodyType = .Planet) {
+                orbitalPeriodEarthYears: Double, bodyType: BodyType = .Planet,
+                axialTiltDegrees: Double = 0.0) {
         self.name = name
         self.path = path
         self.earthRadiusFraction = earthRadiusFraction
         self.texturePath = texturePath
         self.orbitalPeriodEarthYears = orbitalPeriodEarthYears
         self.bodyType = bodyType
+        self.axialTiltDegrees = axialTiltDegrees
     }
 }
 
