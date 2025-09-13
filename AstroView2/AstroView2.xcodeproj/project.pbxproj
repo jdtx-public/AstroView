@@ -64,6 +64,16 @@
 			path = Geometry;
 			sourceTree = "<group>";
 		};
+		1FA8FEE32E76317C00C8C84B /* State */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = State;
+			sourceTree = "<group>";
+		};
+		1FA8FEE82E76374D00C8C84B /* Rendering */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Rendering;
+			sourceTree = "<group>";
+		};
 		1FF5B4FB2CF606AD00B06698 /* Resources */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -133,6 +143,8 @@
 		1FFFBCB32CE9807E00A00A51 = {
 			isa = PBXGroup;
 			children = (
+				1FA8FEE82E76374D00C8C84B /* Rendering */,
+				1FA8FEE32E76317C00C8C84B /* State */,
 				1F1D9D742D16679D00570753 /* Geometry */,
 				1F1D9CC62D11076400570753 /* Physics */,
 				1FF5B4FB2CF606AD00B06698 /* Resources */,
@@ -176,6 +188,8 @@
 				1F126AFB2CF29A7600F28B62 /* utility */,
 				1F1D9CC62D11076400570753 /* Physics */,
 				1F1D9D742D16679D00570753 /* Geometry */,
+				1FA8FEE32E76317C00C8C84B /* State */,
+				1FA8FEE82E76374D00C8C84B /* Rendering */,
 				1FFFBCBE2CE9807E00A00A51 /* AstroView2 */,
 			);
 			name = AstroView2;

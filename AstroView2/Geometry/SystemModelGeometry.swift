@@ -221,9 +221,6 @@ public class SystemModelGeometry: SpaceGeometry {
         
         let positions = Array(rawPositionsAllMapped.map { $0.toSCN().relativeTo(basePosition) })
         
-        // remember that the positions all need to be relative to now because
-        // the planet's position is the parent node position
-        // let positions2 = positions.map { $0.subtracted(by: positions[0]) }
         let positions2 = positions
 
         var positionPairs = [(SCNVector3, SCNVector3)](repeating: (SCNVector3.zero, SCNVector3.zero), count: positions.count)
