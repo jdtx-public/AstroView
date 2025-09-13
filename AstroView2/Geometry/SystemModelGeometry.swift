@@ -88,17 +88,10 @@ public class SystemModelGeometry: SpaceGeometry {
         let moveWithBodyNode = SCNNode()
         let fixedNode = SCNNode()
         
-        let sphere = SCNSphere(radius: fullRadius)
-        let solarBodyNode = SCNNode( geometry: sphere)
-        let textureMaterial = SCNMaterial()
-        let mainBundle = Bundle.main
-        let resourcePath = mainBundle.path(forResource: body.texturePath, ofType: "jpg", inDirectory: "art.scnassets")
-        let myImage = NSImage(byReferencingFile: resourcePath!)!
-        let nodePos = computePosition(Date.now).toSCN()
-        let fullPos = nodePos
-        textureMaterial.diffuse.contents = myImage
-        solarBodyNode.geometry?.materials = [textureMaterial]
-        solarBodyNode.name = "solarBody"
+        let solarBodyNode = createBodyNode(forBodyRecord: body)
+        moveWithBodyNode.addChildNode(solarBodyNode)
+        
+        let fullPos = computePosition(Date.now).toSCN()
 
         if (body.bodyType != .Sun) {
             // add a cylinder connecting the center of the world to its parent
@@ -120,21 +113,10 @@ public class SystemModelGeometry: SpaceGeometry {
             fixedNode.addChildNode(orbitNode)
         }
         
-        moveWithBodyNode.addChildNode(solarBodyNode)
 
         let parentNode = SCNNode()
         parentNode.addChildNode(moveWithBodyNode)
         parentNode.addChildNode(fixedNode)
-
-        /*
-        print("\(solarBodyNode.position) \(solarBodyNode.worldPosition)")
-        print("\(parentNode.position) \(parentNode.worldPosition)")
-        print("parent pivot: \(parentNode.pivot)")
-        print("body pivot: \(solarBodyNode.pivot)")
-        print("parent simdPosition: \(parentNode.simdPosition)")
-        print("parent simdTransform: \(parentNode.simdTransform)")
-        */
-        // node.addAnimation(axialRotationAnimation(), forKey: "rotation about axis")
         
         return parentNode
     }
@@ -271,5 +253,21 @@ public class SystemModelGeometry: SpaceGeometry {
         let rawPositions: [simd_double3] = Array(dates.map(computePosition))
         
         return rawPositions
+    }
+    
+    private class func createBodyNode(forBodyRecord body: BodyRecord) -> SCNNode {
+        let fullRadius = body.earthRadiusFraction * AstroConstants.earthRadius
+
+        let sphere = SCNSphere(radius: fullRadius)
+        let solarBodyNode = SCNNode( geometry: sphere)
+        let textureMaterial = SCNMaterial()
+        let mainBundle = Bundle.main
+        let resourcePath = mainBundle.path(forResource: body.texturePath, ofType: "jpg", inDirectory: "art.scnassets")
+        let myImage = NSImage(byReferencingFile: resourcePath!)!
+        textureMaterial.diffuse.contents = myImage
+        solarBodyNode.geometry?.materials = [textureMaterial]
+        solarBodyNode.name = "solarBody"
+
+        return solarBodyNode
     }
 }

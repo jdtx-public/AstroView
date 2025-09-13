@@ -12,37 +12,55 @@ import novas_swift
 import simd
 
 class SceneRendererDelegate: NSObject, SCNSceneRendererDelegate {
+    private let _systemModel: SystemModel
+    private var _curTime: Date
+    private var _lastUpdateTime: TimeInterval
+    
+    public init(systemModel: SystemModel) {
+        _systemModel = systemModel
+        _curTime = Date.now
+        _lastUpdateTime = 0.0
+    }
+    
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         let scene = renderer.scene!
-        let date = Date.now
+        let timeDiff = _lastUpdateTime != 0.0 ? time - _lastUpdateTime : 0.0
+        let timeBump = timeDiff * 3600.0 * 24.0
+        _curTime = _curTime.addingTimeInterval(timeBump)
+
+        _lastUpdateTime = time
+
+        let sunRecord = _systemModel.bodyCatalog.sun
         
-        /*
-        moveNode(scene: scene, nodeName: "Sun", forDate: date, moveFunc: PlanetSim.sunPos)
-        moveNode(scene: scene, nodeName: "Mercury", forDate: date, moveFunc: PlanetSim.mercuryPos)
-        moveNode(scene: scene, nodeName: "Venus", forDate: date, moveFunc: PlanetSim.venusPos)
-        moveNode(scene: scene, nodeName: "Earth", forDate: date, moveFunc: PlanetSim.earthPos)
-        moveNode(scene: scene, nodeName: "Moon", forDate: date, moveFunc: PlanetSim.moonPos)
-        moveNode(scene: scene, nodeName: "Mars", forDate: date, moveFunc: PlanetSim.marsPos)
-        */
+        do {
+            try _systemModel.bodyCatalog.forEachChild(of: sunRecord) { child in
+                moveNode(scene: scene, nodeName: child.name, forDate: _curTime,
+                         moveFunc: {
+                            inputDate in _systemModel.sunRelativePosition(forBody: child, atTime: inputDate)
+                        })
+            }
+        } catch {
+        }
     }
     
     func moveNode(scene: SCNScene, nodeName: String, forDate: Date, moveFunc: (Date) -> simd_double3) {
-        let bodyNode = scene.rootNode.childNode(withName: nodeName, recursively: true)!
-        let position = moveFunc(forDate).toSCN()
-        bodyNode.position = position.scaleBy(AstroConstants.oneAu)
+        // let bodyNode = scene.rootNode.childNode(withName: nodeName, recursively: true)!
+        // let position = moveFunc(forDate).toSCN()
+        // bodyNode.position = position.scaleBy(AstroConstants.oneAu)
     }
 }
 
 class GameViewController: NSViewController {
     
-    private let rendererDelegate = SceneRendererDelegate()
     
     private let _systemModel : SystemModel
     private var _geometry: SpaceGeometry
-    
+    private let _rendererDelegate: SceneRendererDelegate
+
     public override init(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?) {
         _systemModel = SpiceSystemModel()
         _geometry = SystemModelGeometry(withModel: _systemModel)
+        _rendererDelegate = SceneRendererDelegate(systemModel: _systemModel)
 
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
@@ -50,6 +68,7 @@ class GameViewController: NSViewController {
     public required init?(coder: NSCoder) {
         _systemModel = SpiceSystemModel()
         _geometry = SystemModelGeometry(withModel: _systemModel)
+        _rendererDelegate = SceneRendererDelegate(systemModel: _systemModel)
 
         super.init(coder: coder)
     }
@@ -96,7 +115,7 @@ class GameViewController: NSViewController {
         // retrieve the SCNView
         let scnView = self.view as! SCNView
         
-        scnView.delegate = rendererDelegate
+        scnView.delegate = _rendererDelegate
         
         // set the scene to the view
         scnView.scene = scene
