@@ -9,37 +9,47 @@ import Foundation
 import RealityKit
 
 class SolarSystemEntity {
-    class func entity() -> Entity {
-        let curDate = Date.now
+    class func entity(systemModel: SystemModel) -> Entity {
         let entity = Entity()
-        entity.addChild(sun())
+        let bodyCatalog = systemModel.bodyCatalog
         
-        positionEntities(atDate: curDate, solarEntity: entity)
-      
+        let sunRecord = bodyCatalog.sun
+        let sunEntity = makeEntity(forRecord: sunRecord)
+        
+        addChildrenToEntity(parentEntity: sunEntity, parentRecord: bodyCatalog.sun, fromCatalog: bodyCatalog)
+        
+        entity.addChild(sunEntity)
+                
         return entity
     }
     
-    private class func sun() -> Entity {
-        let sunEntity = Entity()
-        let body = solarBody(bodyRadius: 695700, name: "Sun", textureName: "Solarsystemscope_texture_8k_sun")
-        sunEntity.components.set([body])
-        sunEntity.name = "Sun"
+    private class func makeEntity(forRecord: BodyRecord) -> Entity {
+        let entity = Entity()
+        let body = solarBody(bodyRadius: forRecord.earthRadiusFraction, name: forRecord.name, textureName: forRecord.texturePath)
+        let recordComponent = BodyRecordComponent(bodyRecord: forRecord)
         
-        sunEntity.addChild(mercury())
+        entity.components.set([body, recordComponent])
+        entity.name = forRecord.name
         
-        return sunEntity
+        return entity
     }
     
-    private class func mercury() -> Entity {
-        let mercuryEntity = Entity()
-        let body = solarBody(bodyRadius: 2439.7, name: "Mercury", textureName: "Solarsystemscope_texture_8k_mercury")
-        mercuryEntity.components.set([body])
-        mercuryEntity.name = "Mercury"
-        return mercuryEntity
+    private class func addChildrenToEntity(parentEntity: Entity, parentRecord: BodyRecord, fromCatalog: BodyCatalog) {
+        do {
+            try fromCatalog.forEachChild(of: parentRecord) { childRecord in
+                let childEntity = makeEntity(forRecord: childRecord)
+                parentEntity.addChild(childEntity)
+                
+                addChildrenToEntity(parentEntity: childEntity, parentRecord: childRecord, fromCatalog: fromCatalog)
+            }
+        }
+        catch {
+            // ignore for now
+        }
     }
     
-    private class func solarBody(bodyRadius: Float, name: String, textureName: String) -> ModelComponent {
-        let localRadius: Float = bodyRadius.kmToViewUnits
+    private class func solarBody(bodyRadius: Double, name: String, textureName: String) -> ModelComponent {
+        let localRadius: Float = Float(bodyRadius.earthRadiiToViewUnits)
         var baseMaterial = SimpleMaterial(color: .yellow, isMetallic: false)
         let textureResource = try? TextureResource.load(named: textureName)
         if textureResource != nil {
@@ -50,12 +60,5 @@ class SolarSystemEntity {
             mesh: .generateSphere(radius: localRadius),
             materials: materials,
         )
-    }
-    
-    private class func positionEntities(atDate: Date, solarEntity: Entity) {
-        let sun = solarEntity.findEntity(named: "Sun")!
-        sun.setPosition(.zero, relativeTo: solarEntity)
-        
-        let mercury = sun.findEntity(named: "Mercury")!
     }
 }

@@ -18,6 +18,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             RealityView { content in
+                BodyRecordComponent.registerComponent()
                 createGameScene(content)
             }.gesture(tapEntityGesture)
             // Add camera controls that orbit the origin.
@@ -68,7 +69,7 @@ struct ContentView: View {
         ])
          */
         
-        let solarEntity = SolarSystemEntity.entity()
+        let solarEntity = SolarSystemEntity.entity(systemModel: _systemModel)
 
         // Add the entity to the RealityView content.
         content.add(solarEntity)
