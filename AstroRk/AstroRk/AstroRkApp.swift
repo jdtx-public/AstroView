@@ -10,10 +10,12 @@ import SwiftUI
 @main
 struct AstroRkApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    private let systemModel: SystemModel = SpiceSystemModel()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(systemModel: systemModel)
         }
     }
 }
