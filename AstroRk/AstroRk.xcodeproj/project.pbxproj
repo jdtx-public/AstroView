@@ -6,6 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1FA800312E771AC700C8C84B /* cspice-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA800302E771AC700C8C84B /* cspice-swift */; };
+		1FA800332E771AC700C8C84B /* novas-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA800322E771AC700C8C84B /* novas-swift */; };
+		1FA800352E771AC700C8C84B /* space-pack in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA800342E771AC700C8C84B /* space-pack */; };
+		1FA8FFB82E77199500C8C84B /* novas-lib in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA8FFB72E77199500C8C84B /* novas-lib */; };
+		1FA8FFBB2E7719C000C8C84B /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA8FFBA2E7719C000C8C84B /* Algorithms */; };
+		1FA8FFBE2E7719E400C8C84B /* cspice-lib in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA8FFBD2E7719E400C8C84B /* cspice-lib */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		1FA8FF3D2E7648C200C8C84B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +61,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FA8FFBB2E7719C000C8C84B /* Algorithms in Frameworks */,
+				1FA800312E771AC700C8C84B /* cspice-swift in Frameworks */,
+				1FA800352E771AC700C8C84B /* space-pack in Frameworks */,
+				1FA8FFB82E77199500C8C84B /* novas-lib in Frameworks */,
+				1FA800332E771AC700C8C84B /* novas-swift in Frameworks */,
+				1FA8FFBE2E7719E400C8C84B /* cspice-lib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +127,12 @@
 			);
 			name = AstroRk;
 			packageProductDependencies = (
+				1FA8FFB72E77199500C8C84B /* novas-lib */,
+				1FA8FFBA2E7719C000C8C84B /* Algorithms */,
+				1FA8FFBD2E7719E400C8C84B /* cspice-lib */,
+				1FA800302E771AC700C8C84B /* cspice-swift */,
+				1FA800322E771AC700C8C84B /* novas-swift */,
+				1FA800342E771AC700C8C84B /* space-pack */,
 			);
 			productName = AstroRk;
 			productReference = 1FA8FF2C2E7648C100C8C84B /* AstroRk.app */;
@@ -195,6 +216,12 @@
 			);
 			mainGroup = 1FA8FF232E7648C100C8C84B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1FA8FFB62E77199500C8C84B /* XCLocalSwiftPackageReference "../../space-pack/novas-lib" */,
+				1FA8FFB92E7719C000C8C84B /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				1FA8FFBC2E7719E400C8C84B /* XCLocalSwiftPackageReference "../../space-pack/cspice-lib" */,
+				1FA8002F2E771AC700C8C84B /* XCLocalSwiftPackageReference "../../space-pack/space-pack" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1FA8FF2D2E7648C100C8C84B /* Products */;
 			projectDirPath = "";
@@ -541,6 +568,60 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1FA8002F2E771AC700C8C84B /* XCLocalSwiftPackageReference "../../space-pack/space-pack" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../space-pack/space-pack";
+		};
+		1FA8FFB62E77199500C8C84B /* XCLocalSwiftPackageReference "../../space-pack/novas-lib" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../space-pack/novas-lib";
+		};
+		1FA8FFBC2E7719E400C8C84B /* XCLocalSwiftPackageReference "../../space-pack/cspice-lib" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../space-pack/cspice-lib";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1FA8FFB92E7719C000C8C84B /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1FA800302E771AC700C8C84B /* cspice-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "cspice-swift";
+		};
+		1FA800322E771AC700C8C84B /* novas-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "novas-swift";
+		};
+		1FA800342E771AC700C8C84B /* space-pack */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "space-pack";
+		};
+		1FA8FFB72E77199500C8C84B /* novas-lib */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "novas-lib";
+		};
+		1FA8FFBA2E7719C000C8C84B /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1FA8FFB92E7719C000C8C84B /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+		1FA8FFBD2E7719E400C8C84B /* cspice-lib */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "cspice-lib";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1FA8FF242E7648C100C8C84B /* Project object */;
 }
