@@ -9,6 +9,12 @@ import SwiftUI
 import RealityKit
 
 struct ContentView: View {
+    private let _systemModel: SystemModel
+    
+    public init(systemModel: SystemModel) {
+        _systemModel = systemModel
+    }
+    
     var body: some View {
         ZStack {
             RealityView { content in
@@ -37,6 +43,7 @@ struct ContentView: View {
     ///
     /// - Parameter content: The active content for this RealityKit game.
     fileprivate func createGameScene(_ content: any RealityViewContentProtocol) {
+        /*
         let boxSize: SIMD3<Float> = [0.2, 0.2, 0.2]
         // A component that shows a red box model.
         let boxModel = ModelComponent(
@@ -59,9 +66,12 @@ struct ContentView: View {
             boxModel, boxCollision, inputTargetComponent, hoverComponent,
             spinComponent
         ])
+         */
+        
+        let solarEntity = SolarSystemEntity.entity()
 
         // Add the entity to the RealityView content.
-        content.add(boxEntity)
+        content.add(solarEntity)
 
         // Add a perspective camera to the scene.
         let camera = Entity()
@@ -97,5 +107,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(systemModel: SpiceSystemModel())
 }

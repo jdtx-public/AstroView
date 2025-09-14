@@ -41,6 +41,10 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1FA8FF2E2E7648C100C8C84B /* AstroRk */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFolders = (
+				Resources/ephemeris,
+				Resources/spice,
+			);
 			path = AstroRk;
 			sourceTree = "<group>";
 		};
