@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "io_texture_map_8k__outdated__by_askanerypaners_dg7hgin-fullview.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
